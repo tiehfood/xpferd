@@ -1,4 +1,4 @@
-import type { LineItemTemplateDto } from '$shared/types';
+import type { LineItemTemplateDto } from '../../shared/types';
 import { LineItemTemplateModel } from '../models/LineItemTemplate.js';
 import { Database } from '../database/Database.js';
 

@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { PdfTemplateDto } from '$shared/types';
+import type { PdfTemplateDto } from '../../shared/types';
 import { PdfTemplateService } from '../services/PdfTemplateService.js';
 import { InvoiceService } from '../services/InvoiceService.js';
 import { PdfRenderService } from '../services/PdfRenderService.js';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { location, push } from 'svelte-spa-router';
+  import { router, push } from 'svelte-spa-router';
   import { invoiceNumberTemplateApi, paymentTemplateApi, lineItemTemplateApi, invoiceTemplateApi } from '../lib/api/templateApi';
   import { PAYMENT_MEANS_CODES, UNIT_CODES, VAT_CATEGORY_CODES } from '$shared/constants';
   import { formatIban, fmtCurrency } from '../../shared/constants/format';
@@ -29,14 +29,12 @@
   let editError = $state('');
 
   $effect(() => {
-    const unsub = location.subscribe((val: string) => {
-      if (val === '/templates/payments') activeTab = 'payments';
-      else if (val === '/templates/line-items') activeTab = 'line-items';
-      else if (val === '/templates/invoices') activeTab = 'invoices';
-      else activeTab = 'invoice-numbers';
-      load();
-    });
-    return unsub;
+    const val = router.location;
+    if (val === '/templates/payments') activeTab = 'payments';
+    else if (val === '/templates/line-items') activeTab = 'line-items';
+    else if (val === '/templates/invoices') activeTab = 'invoices';
+    else activeTab = 'invoice-numbers';
+    load();
   });
 
   async function load() {

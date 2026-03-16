@@ -1,4 +1,4 @@
-import type { PdfBlockDto, InvoiceDto } from '$shared/types';
+import type { PdfBlockDto, InvoiceDto } from '../types';
 
 /**
  * Computes the vertical space (in pts / CSS px) a block's content will occupy

@@ -9,7 +9,7 @@
 
 import { PDF, ops, rgb } from '@libpdf/core';
 import type { PDFPage } from '@libpdf/core';
-import type { PdfBlockDto } from '$shared/types';
+import type { PdfBlockDto } from '../../shared/types';
 import { convert } from 'xmlbuilder2';
 import { Resvg } from '@resvg/resvg-js';
 

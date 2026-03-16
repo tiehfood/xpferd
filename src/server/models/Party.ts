@@ -1,5 +1,5 @@
 import type BetterSqlite3 from 'better-sqlite3';
-import type { PartyDto } from '$shared/types';
+import type { PartyDto } from '../../shared/types';
 
 interface PartyRow {
   id: number;

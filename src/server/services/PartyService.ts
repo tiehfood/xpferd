@@ -1,4 +1,4 @@
-import type { PartyDto } from '$shared/types';
+import type { PartyDto } from '../../shared/types';
 import { PartyModel } from '../models/Party.js';
 import { Database } from '../database/Database.js';
 

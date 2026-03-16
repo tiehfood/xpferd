@@ -1,5 +1,5 @@
 import type BetterSqlite3 from 'better-sqlite3';
-import type { AppSettingsDto } from '$shared/types';
+import type { AppSettingsDto } from '../../shared/types';
 
 interface AppSettingsRow {
   id: number;

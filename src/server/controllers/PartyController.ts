@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { PartyDto } from '$shared/types';
+import type { PartyDto } from '../../shared/types';
 import { PartyService } from '../services/PartyService.js';
 import { partySchema } from '../validators/partyValidator.js';
 import { ZodError } from 'zod';

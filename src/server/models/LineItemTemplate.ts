@@ -1,5 +1,5 @@
 import type BetterSqlite3 from 'better-sqlite3';
-import type { LineItemTemplateDto } from '$shared/types';
+import type { LineItemTemplateDto } from '../../shared/types';
 
 interface Row {
   id: number;

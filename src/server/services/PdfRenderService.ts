@@ -1,8 +1,8 @@
 import { PDF, rgb, measureText } from '@libpdf/core';
 import type { PDFPage, RGB, Standard14FontName, EmbeddedFont, FontInput } from '@libpdf/core';
-import type { PdfTemplateDto, PdfBlockDto, InvoiceDto } from '$shared/types';
-import { UNIT_CODES, PAYMENT_MEANS_CODES, KLEINUNTERNEHMER_NOTE } from '$shared/constants';
-import { formatIban, fmtDate } from '$shared/constants/format';
+import type { PdfTemplateDto, PdfBlockDto, InvoiceDto } from '../../shared/types';
+import { UNIT_CODES, PAYMENT_MEANS_CODES, KLEINUNTERNEHMER_NOTE } from '../../shared/constants/index.js';
+import { formatIban, fmtDate } from '../../shared/constants/format.js';
 import { AppSettingsService } from './AppSettingsService.js';
 export { computeBlockContentHeight } from '../../shared/utils/blockMetrics.js';
 import { SvgToPdfRenderer } from './SvgToPdfRenderer.js';

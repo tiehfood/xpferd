@@ -1,4 +1,4 @@
-import type { InvoiceTemplateDto } from '$shared/types';
+import type { InvoiceTemplateDto } from '../../shared/types';
 import { InvoiceTemplateModel } from '../models/InvoiceTemplate.js';
 import { Database } from '../database/Database.js';
 

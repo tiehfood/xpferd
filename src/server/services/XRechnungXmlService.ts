@@ -1,6 +1,6 @@
 import { create } from 'xmlbuilder2';
-import type { InvoiceDto } from '$shared/types';
-import { KLEINUNTERNEHMER_NOTE } from '$shared/constants';
+import type { InvoiceDto } from '../../shared/types';
+import { KLEINUNTERNEHMER_NOTE } from '../../shared/constants/index.js';
 
 export class XRechnungXmlService {
   private static readonly CUSTOMIZATION_ID =

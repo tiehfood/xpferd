@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { LineItemTemplateDto } from '$shared/types';
+import type { LineItemTemplateDto } from '../../shared/types';
 import { LineItemTemplateService } from '../services/LineItemTemplateService.js';
 import { lineItemTemplateSchema } from '../validators/templateValidators.js';
 import { ZodError } from 'zod';

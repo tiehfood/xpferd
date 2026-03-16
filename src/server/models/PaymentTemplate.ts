@@ -1,5 +1,5 @@
 import type BetterSqlite3 from 'better-sqlite3';
-import type { PaymentTemplateDto } from '$shared/types';
+import type { PaymentTemplateDto } from '../../shared/types';
 
 interface Row {
   id: number;

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { location } from 'svelte-spa-router';
+  import { router } from 'svelte-spa-router';
   import { partyApi, PartyValidationError } from '../lib/api/partyApi';
   import type { FieldErrors } from '../lib/api/partyApi';
   import { COUNTRY_CODES } from '$shared/constants';
@@ -17,14 +16,10 @@
   let saving = $state(false);
 
   $effect(() => {
-    const unsub = location.subscribe((val: string) => {
-      partyType = val === '/buyers' ? 'buyer' : 'seller';
-      load();
-    });
-    return unsub;
+    const val = router.location;
+    partyType = val === '/buyers' ? 'buyer' : 'seller';
+    load();
   });
-
-  onMount(load);
 
   async function load() {
     loading = true;

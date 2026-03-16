@@ -1,16 +1,9 @@
 <script lang="ts">
-  import { push, location } from 'svelte-spa-router';
+  import { push, router } from 'svelte-spa-router';
   import '../../../shared/constants/version';
   import { t } from '../i18n.js';
 
-  let currentPath = $state('');
-
-  $effect(() => {
-    const unsub = location.subscribe((val: string) => {
-      currentPath = val;
-    });
-    return unsub;
-  });
+  let currentPath = $derived(router.location);
 
   function isActive(path: string): boolean {
     if (path === '/') return currentPath === '/' || currentPath === '';

@@ -1,4 +1,4 @@
-import type { PdfTemplateDto } from '$shared/types';
+import type { PdfTemplateDto } from '../../shared/types';
 import { PdfTemplateModel } from '../models/PdfTemplate.js';
 import { Database } from '../database/Database.js';
 

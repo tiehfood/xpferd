@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { InvoiceNumberTemplateDto } from '$shared/types';
+import type { InvoiceNumberTemplateDto } from '../../shared/types';
 import { InvoiceNumberTemplateService } from '../services/InvoiceNumberTemplateService.js';
 import { invoiceNumberTemplateSchema } from '../validators/templateValidators.js';
 import { ZodError } from 'zod';

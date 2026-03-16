@@ -1,4 +1,4 @@
-import type { AppSettingsDto } from '$shared/types';
+import type { AppSettingsDto } from '../../shared/types';
 import { AppSettingsModel } from '../models/AppSettings.js';
 import { Database } from '../database/Database.js';
 

@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { PaymentTemplateDto } from '$shared/types';
+import type { PaymentTemplateDto } from '../../shared/types';
 import { PaymentTemplateService } from '../services/PaymentTemplateService.js';
 import { paymentTemplateSchema } from '../validators/templateValidators.js';
 import { ZodError } from 'zod';

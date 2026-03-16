@@ -1,5 +1,5 @@
 import type BetterSqlite3 from 'better-sqlite3';
-import type { InvoiceDto, InvoiceSummaryDto } from '$shared/types';
+import type { InvoiceDto, InvoiceSummaryDto } from '../../shared/types';
 import { InvoiceLineModel } from './InvoiceLine.js';
 
 interface InvoiceRow {

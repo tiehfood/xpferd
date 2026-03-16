@@ -12,11 +12,7 @@
     "verbatimModuleSyntax": true,
     "outDir": "dist",
     "rootDir": "src",
-    "declaration": false,
-    "baseUrl": ".",
-    "paths": {
-      "$shared/*": ["src/shared/*"]
-    }
+    "declaration": false
   },
   "include": ["src/server/**/*.ts", "src/shared/**/*.ts"],
   "exclude": ["node_modules"]

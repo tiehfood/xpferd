@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { AppSettingsDto } from '$shared/types';
+import type { AppSettingsDto } from '../../shared/types';
 import { AppSettingsService } from '../services/AppSettingsService.js';
 import { appSettingsSchema } from '../validators/appSettingsValidator.js';
 import { ZodError } from 'zod';
