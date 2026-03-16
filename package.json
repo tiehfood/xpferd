@@ -18,7 +18,7 @@
     "@libpdf/core": "^0.2.7",
     "@resvg/resvg-js": "^2.6.2",
     "asn1js": "^3.0.7",
-    "better-sqlite3": "^11.7.0",
+    "better-sqlite3": "^12.8.0",
     "cors": "^2.8.5",
     "express": "^4.21.0",
     "swagger-jsdoc": "^6.2.8",
