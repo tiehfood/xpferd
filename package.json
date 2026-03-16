@@ -41,7 +41,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.7",
     "@types/validator": "^13.15.10",
-    "autoprefixer": "^10.4.24",
+    "autoprefixer": "^10.4.27",
     "concurrently": "^9.1.0",
     "esbuild": "^0.27.3",
     "esbuild-svelte": "^0.9.4",
