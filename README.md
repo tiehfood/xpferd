@@ -21,15 +21,14 @@
 
 # X(P)FeRD
 
-I needed a simple Application for creating, managing, and exporting XRechnung XML invoices and ZUGFeRD PDF invoices (German e-invoicing standard).
-Especially the simple WYSIWYG PDF template editor is a feature I couldn't find a existing solution I liked.
-So I build this little app (with a little help of AI, I will be honest 🙈).
-It's probably not perfect, as I have only limited test data, but feel free to report any issues or submit PRs if you want to contribute.
+I needed a simple application for creating, managing and exporting XRechnung XML and ZUGFeRD PDF invoices (German e-invoicing standard).
+Especially a simple WYSIWYG PDF designer was something I was looking for but couldn't find an existing solution I liked.
+So I build this little app (AI helped a little, I will be honest and transparent 🙈).
+It's probably not perfect as my testing data is limited but feel free to report any issues or submit PRs if you want to contribute.
 
 ## Features
 
 - Create and edit invoices with all legally required fields for Germany
-- Auto-calculated totals (net, tax, gross)
 - Export invoices as XRechnung 3.0 compliant XML
 - Design single page invoice PDF with WYSIWYG editor
   - Support for SVG logos
@@ -97,3 +96,7 @@ docker-compose run --rm test
 - **PDF Generation:** @libpdf/core
 - **XML Generation:** xmlbuilder2 (UBL 2.1 / XRechnung 3.0)
 - **API Documentation:** Swagger-UI (`/api-docs`)
+
+## Credits
+ - [XRechnung 3.0](https://xeinkauf.de/xrechnung/versionen-und-bundles/)
+ - [ZUGFeRD 2.1](https://www.ferd-net.de/standards/zugferd/)
