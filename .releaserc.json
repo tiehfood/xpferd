@@ -85,7 +85,7 @@
       "@semantic-release/exec",
       {
         "analyzeCommitsCmd": "echo \"VERSION_NUMBER=${lastRelease.version}\" > release.env; echo \"CI_CREATE_IMAGE=false\" >> release.env",
-        "generateNotesCmd": "echo \"VERSION_NUMBER=${nextRelease.version}\" > release.env; echo \"CI_CREATE_IMAGE=true\" >> release.env"
+        "generateNotesCmd": "printf '%s\\n\\n---\\n\\n## 🐳 Docker Images\\n\\n| Tag | Pull command |\\n|-----|-------------|\\n| `latest` | `docker pull %s/xpferd:latest` |\\n| `${nextRelease.version}` | `docker pull %s/xpferd:${nextRelease.version}` |\\n\\n> Multi-arch images are available for `linux/amd64` and `linux/arm64`.\\n' \"${nextRelease.notes}\" \"$DOCKERHUB_USERNAME\" \"$DOCKERHUB_USERNAME\"; echo \"VERSION_NUMBER=${nextRelease.version}\" > release.env; echo \"CI_CREATE_IMAGE=true\" >> release.env"
       }
     ]
   ]
