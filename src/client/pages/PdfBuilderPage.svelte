@@ -3518,8 +3518,9 @@
 
   .preview-section select {
     font-size: 0.75rem;
-    padding: 0.35rem 0.5rem;
+    padding: 0.35rem 2rem 0.35rem 0.5rem;
     margin-top: 0.2rem;
+    text-overflow: ellipsis;
   }
 
   .preview-hint {
