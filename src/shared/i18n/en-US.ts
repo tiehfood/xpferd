@@ -280,7 +280,7 @@ const enUs = {
   'pdf_builder.schriften': 'Fonts',
   'pdf_builder.hilfslinien': 'Guide Lines',
   'pdf_builder.eigene_hilfslinien': 'Custom Guide Lines',
-  'pdf_builder.png_jpeg_svg': 'Upload PNG, JPEG or SVG',
+  'pdf_builder.png_jpeg_svg': 'Upload image',
   'pdf_builder.ttf_otf': 'Upload TTF/OTF',
   'pdf_builder.bild_ersetzen': 'Replace image',
   'pdf_builder.bild_entfernen': 'Remove image',

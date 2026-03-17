@@ -280,7 +280,7 @@ const deDe = {
   'pdf_builder.schriften': 'Schriften',
   'pdf_builder.hilfslinien': 'Hilfslinien',
   'pdf_builder.eigene_hilfslinien': 'Eigene Hilfslinien',
-  'pdf_builder.png_jpeg_svg': 'PNG, JPEG oder SVG hochladen',
+  'pdf_builder.png_jpeg_svg': 'Bild hochladen',
   'pdf_builder.ttf_otf': 'TTF/OTF hochladen',
   'pdf_builder.bild_ersetzen': 'Bild ersetzen',
   'pdf_builder.bild_entfernen': 'Bild entfernen',
