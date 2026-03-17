@@ -27,13 +27,9 @@ services:
     command: sh -c "pnpm install && pnpm test"
 
   production:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VERSION: dev
+    image: tiehfood/xpferd:latest
     ports:
-      - "4000:3000"
+      - "3000:3000"
     volumes:
       - xrechnung-data:/app/data
 
