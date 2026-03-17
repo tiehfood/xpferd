@@ -23,8 +23,12 @@
 
 I needed a simple application for creating, managing and exporting XRechnung XML and ZUGFeRD PDF invoices (German e-invoicing standard).
 Especially a simple WYSIWYG PDF designer was something I was looking for but couldn't find an existing solution I liked.
-So I build this little app (AI helped a little, I will be honest and transparent 🙈).
+So I build this little app.
 It's probably not perfect as my testing data is limited but feel free to report any issues or submit PRs if you want to contribute.
+
+I will be honest about the usage of AI. It assisted me in this project, but it's still nothing, you create with just two or three promts. There went some serious thinking in it, particularly in the features.
+
+About the name: The "X" was taken from XRechnung obviously and part of ZUGFeRD is so closely to "Pferd" (Horse) in german, so I combined both and made an "XPferd" out of it.
 
 ## Features
 
@@ -37,6 +41,7 @@ It's probably not perfect as my testing data is limited but feel free to report 
 - Export invoices as ZUGFeRD 2.1 compliant PDF (with embedded XML)
 - Duplicate invoices or create from templates
 - Swagger API documentation at `/api-docs`
+- Support for Germany and English language
 
 ## Screenshots
 | ![Screenshot01](docs/screenshots/screen1.png) | ![Screenshot02](docs/screenshots/screen2.png) |
