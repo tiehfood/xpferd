@@ -24,7 +24,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "validator": "^13.15.26",
-    "xmlbuilder2": "^3.1.1",
+    "xmlbuilder2": "^4.0.3",
     "zod": "^3.24.0"
   },
   "pnpm": {
