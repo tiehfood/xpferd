@@ -53,14 +53,17 @@ About the name: The "X" was taken from XRechnung obviously and part of ZUGFeRD i
 **Latest image**: `tiehfood/xpferd:latest`  
 **Specific version**: `tiehfood/xpferd:v1.0.2`
 
-## Quick Start (Docker Compose)
+## Quick Start
 
 ```bash
-# Development (hot-reload)
+# Development
 docker-compose up dev
 
 # Production
 docker-compose up production
+
+# Minimal
+docker run --rm -it -v xpferd:/app/data -p 3000:3000 tiehfood/xpferd:latest
 ```
 
 The app is available at `http://localhost:3000` for production.
