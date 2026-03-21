@@ -112,3 +112,13 @@ docker-compose run --rm test
 ## Credits
  - [XRechnung 3.0](https://xeinkauf.de/xrechnung/versionen-und-bundles/)
  - [ZUGFeRD 2.1](https://www.ferd-net.de/standards/zugferd/)
+
+___
+
+<p align="center">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=tiehfood/xpferd&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=tiehfood/xpferd&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=tiehfood/xpferd&type=date&legend=bottom-right" />
+ </picture>
+</p>
