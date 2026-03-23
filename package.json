@@ -34,7 +34,7 @@
     ]
   },
   "devDependencies": {
-    "@tsconfig/svelte": "^5.0.4",
+    "@tsconfig/svelte": "^5.0.8",
     "@types/better-sqlite3": "^7.6.12",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
