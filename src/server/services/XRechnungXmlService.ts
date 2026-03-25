@@ -30,10 +30,27 @@ export class XRechnungXmlService {
       doc.ele('cbc:Note').txt(KLEINUNTERNEHMER_NOTE);
     }
 
+    // General invoice note (BT-22)
+    if (invoice.note && !invoice.kleinunternehmer) {
+      doc.ele('cbc:Note').txt(invoice.note);
+    }
+
     doc.ele('cbc:DocumentCurrencyCode').txt(invoice.currencyCode);
 
     // Buyer Reference (BT-10) — mandatory for XRechnung (BR-DE-15)
     doc.ele('cbc:BuyerReference').txt(invoice.buyerReference || 'n/a');
+
+    // Order Reference (BT-13)
+    if (invoice.orderReference) {
+      doc.ele('cac:OrderReference')
+        .ele('cbc:ID').txt(invoice.orderReference);
+    }
+
+    // Contract Reference (BT-12)
+    if (invoice.contractReference) {
+      doc.ele('cac:ContractDocumentReference')
+        .ele('cbc:ID').txt(invoice.contractReference);
+    }
 
     // Seller (AccountingSupplierParty)
     this.addParty(doc, 'cac:AccountingSupplierParty', invoice.seller, true);
@@ -41,12 +58,24 @@ export class XRechnungXmlService {
     // Buyer (AccountingCustomerParty)
     this.addParty(doc, 'cac:AccountingCustomerParty', invoice.buyer, false);
 
+    // Delivery (BG-13) — Actual delivery date (BT-72)
+    if (invoice.deliveryDate) {
+      doc.ele('cac:Delivery')
+        .ele('cbc:ActualDeliveryDate').txt(invoice.deliveryDate);
+    }
+
     // Payment Means (BG-16)
     const paymentMeans = doc.ele('cac:PaymentMeans');
     paymentMeans.ele('cbc:PaymentMeansCode').txt(invoice.paymentMeansCode);
+    if (invoice.paymentReference) {
+      paymentMeans.ele('cbc:PaymentID').txt(invoice.paymentReference);
+    }
     if (invoice.iban) {
       const payeeAccount = paymentMeans.ele('cac:PayeeFinancialAccount');
       payeeAccount.ele('cbc:ID').txt(invoice.iban);
+      if (invoice.accountName) {
+        payeeAccount.ele('cbc:Name').txt(invoice.accountName);
+      }
       if (invoice.bic) {
         payeeAccount.ele('cac:FinancialInstitutionBranch')
           .ele('cbc:ID').txt(invoice.bic);
@@ -87,6 +116,10 @@ export class XRechnungXmlService {
       .txt(this.fmt(invoice.totalNetAmount ?? 0));
     monetaryTotal.ele('cbc:TaxInclusiveAmount', { currencyID: invoice.currencyCode })
       .txt(this.fmt(invoice.totalGrossAmount ?? 0));
+    if (invoice.prepaidAmount && invoice.prepaidAmount > 0) {
+      monetaryTotal.ele('cbc:PrepaidAmount', { currencyID: invoice.currencyCode })
+        .txt(this.fmt(invoice.prepaidAmount));
+    }
     monetaryTotal.ele('cbc:PayableAmount', { currencyID: invoice.currencyCode })
       .txt(this.fmt(invoice.amountDue ?? 0));
 
@@ -100,6 +133,9 @@ export class XRechnungXmlService {
         .txt(this.fmt(line.lineNetAmount));
 
       const item = invLine.ele('cac:Item');
+      if (line.itemDescription) {
+        item.ele('cbc:Description').txt(line.itemDescription);
+      }
       item.ele('cbc:Name').txt(line.itemName);
       const classifiedTax = item.ele('cac:ClassifiedTaxCategory');
       classifiedTax.ele('cbc:ID').txt(line.vatCategoryCode);
