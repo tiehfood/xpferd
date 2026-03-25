@@ -8,6 +8,7 @@ const deDe = {
   'settings.zahlenformat': 'Zahlenformat',
   'settings.deutsch': 'Deutsch',
   'settings.englisch': 'Englisch',
+  'settings.locale.name': 'Deutsch',
   'settings.speichern': 'Speichern',
   'settings.speichern_laufend': 'Speichern...',
   'settings.gespeichert': 'Einstellungen gespeichert',
@@ -25,6 +26,21 @@ const deDe = {
   'sidebar.positionen': 'Positionen',
   'sidebar.zahlungsarten': 'Zahlungsarten',
   'sidebar.nummernvorlagen': 'Nummernvorlagen',
+  'sidebar.import': 'XML-Import',
+
+  // ── Import ────────────────────────────────────────────────────────────────
+  'import.title': 'XML-Import',
+  'import.subtitle': 'XRechnung oder ZUGFeRD-XML importieren',
+  'import.datei_waehlen': 'XML-Datei auswählen',
+  'import.oder_einfuegen': 'oder XML hier einfügen',
+  'import.importieren': 'Importieren & Bearbeiten',
+  'import.vorschau': 'Vorschau',
+  'import.fehler': 'Import fehlgeschlagen',
+  'import.format_erkannt': 'Format erkannt',
+  'import.ubl': 'UBL 2.1',
+  'import.cii': 'CII/ZUGFeRD',
+  'import.keine_datei': 'Bitte wählen Sie eine XML-Datei aus oder fügen Sie XML-Inhalt ein.',
+  'import.wird_analysiert': 'XML wird analysiert...',
 
   // ── HeaderSection ─────────────────────────────────────────────────────────
   'header.card_title': 'Rechnungsdaten',
@@ -40,6 +56,14 @@ const deDe = {
   'header.ust_satz': 'USt-Satz %',
   'header.nummernvorlage_placeholder': 'Nummernvorlage…',
   'header.wird_beim_speichern_vergeben': 'Wird beim Speichern vergeben',
+  'header.bemerkung': 'Bemerkung',
+  'header.bemerkung_placeholder': 'Zusätzliche Hinweise zur Rechnung',
+  'header.leistungsdatum': 'Leistungsdatum',
+  'header.bestellnummer': 'Bestellnummer (BT-13)',
+  'header.bestellnummer_placeholder': 'z.B. PO-2024-001',
+  'header.vertragsnummer': 'Vertragsnummer (BT-12)',
+  'header.vertragsnummer_placeholder': 'z.B. V-2024-001',
+  'header.weitere_angaben': 'Weitere Angaben',
 
   // ── PartySection ──────────────────────────────────────────────────────────
   'party.laden': 'Laden...',
@@ -64,6 +88,8 @@ const deDe = {
   'lines.gesamt': 'Gesamt',
   'lines.artikelbezeichnung_placeholder': 'Artikelbezeichnung',
   'lines.position_entfernen': 'Position entfernen',
+  'lines.beschreibung': 'Beschreibung',
+  'lines.beschreibung_placeholder': 'Detaillierte Artikelbeschreibung',
 
   // ── PaymentSection ────────────────────────────────────────────────────────
   'payment.card_title': 'Zahlung',
@@ -74,6 +100,10 @@ const deDe = {
   'payment.bic_placeholder': 'COBADEFFXXX',
   'payment.zahlungsbedingungen': 'Zahlungsbedingungen',
   'payment.zahlungsbedingungen_placeholder': 'Zahlbar innerhalb von 30 Tagen',
+  'payment.verwendungszweck': 'Verwendungszweck',
+  'payment.verwendungszweck_placeholder': 'z.B. RE-2024-0042',
+  'payment.kontoinhaber': 'Kontoinhaber',
+  'payment.kontoinhaber_placeholder': 'Name des Kontoinhabers',
 
   // ── TotalsSection ─────────────────────────────────────────────────────────
   'totals.card_title': 'Summen',
@@ -81,6 +111,8 @@ const deDe = {
   'totals.ust': 'USt',
   'totals.umsatzsteuer_entfaellt': 'Umsatzsteuer entfällt',
   'totals.gesamtbetrag': 'Gesamtbetrag',
+  'totals.anzahlung': 'Anzahlung',
+  'totals.zahlbetrag': 'Zahlbetrag',
 
   // ── App (navigation / layout) ─────────────────────────────────────────────
   'nav.pdf_leinwand': 'PDF-Leinwand',

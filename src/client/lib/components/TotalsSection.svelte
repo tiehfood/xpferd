@@ -3,7 +3,7 @@
   import { getSettings } from '../settingsStore.svelte';
   import { t } from '../i18n.js';
 
-  let { invoice }: { invoice: any } = $props();
+  let { invoice = $bindable(), onchange = () => {} }: { invoice: any; onchange?: () => void } = $props();
 </script>
 
 <div class="card totals-card">
@@ -33,6 +33,19 @@
       <span class="total-label">{t('totals.gesamtbetrag')}</span>
       <span class="total-value mono">{fmtCurrency(invoice.totalGrossAmount, invoice.currencyCode, getSettings().numberFormat)}</span>
     </div>
+
+    <div class="total-row prepaid-row">
+      <span class="total-label">{t('totals.anzahlung')}</span>
+      <input type="number" step="0.01" min="0" class="prepaid-input mono"
+        bind:value={invoice.prepaidAmount} oninput={onchange} placeholder="0,00" />
+    </div>
+
+    {#if invoice.prepaidAmount > 0}
+      <div class="total-row amount-due">
+        <span class="total-label">{t('totals.zahlbetrag')}</span>
+        <span class="total-value mono">{fmtCurrency(invoice.totalGrossAmount - (invoice.prepaidAmount || 0), invoice.currencyCode, getSettings().numberFormat)}</span>
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -107,6 +120,34 @@
   .grand-total .total-value {
     font-weight: 800;
     font-size: 1.1rem;
+    color: var(--primary);
+  }
+
+  .prepaid-input {
+    width: 120px;
+    text-align: right;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    height: auto;
+  }
+
+  .prepaid-row {
+    border-top: 1px dashed var(--border);
+    padding-top: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .amount-due {
+    padding-top: 0.35rem;
+  }
+
+  .amount-due .total-label {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .amount-due .total-value {
+    font-weight: 700;
     color: var(--primary);
   }
 </style>

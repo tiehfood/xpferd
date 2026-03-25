@@ -34,6 +34,10 @@
       currencyCode: 'EUR',
       dueDate: '',
       buyerReference: '',
+      note: '',
+      deliveryDate: '',
+      orderReference: '',
+      contractReference: '',
       seller: {
         name: '', street: '', city: '', postalCode: '', countryCode: 'DE',
         vatId: '', taxNumber: '', contactName: '', contactPhone: '', contactEmail: '',
@@ -46,15 +50,19 @@
       paymentTerms: '',
       iban: '',
       bic: '',
+      paymentReference: '',
+      accountName: '',
       taxCategoryCode: 'S',
       taxRate: 19,
       kleinunternehmer: false,
       totalNetAmount: 0,
       totalTaxAmount: 0,
       totalGrossAmount: 0,
+      prepaidAmount: 0,
       amountDue: 0,
       lines: [{
         lineNumber: 1, quantity: 1, unitCode: 'C62', itemName: '',
+        itemDescription: '',
         netPrice: 0, vatCategoryCode: 'S', vatRate: 19, lineNetAmount: 0,
       }],
     };
@@ -96,7 +104,7 @@
       ? 0
       : Math.round(net * invoice.taxRate / 100 * 100) / 100;
     invoice.totalGrossAmount = Math.round((invoice.totalNetAmount + invoice.totalTaxAmount) * 100) / 100;
-    invoice.amountDue = invoice.totalGrossAmount;
+    invoice.amountDue = Math.round((invoice.totalGrossAmount - (invoice.prepaidAmount || 0)) * 100) / 100;
   }
 
   async function handleSave() {
@@ -268,7 +276,7 @@
 
   <PaymentSection bind:invoice />
   <LinesSection bind:lines={invoice.lines} kleinunternehmer={invoice.kleinunternehmer} onchange={recalculate} />
-  <TotalsSection {invoice} />
+  <TotalsSection bind:invoice onchange={recalculate} />
 {/if}
 
 {#if showTemplateSaveModal}

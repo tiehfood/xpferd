@@ -84,6 +84,16 @@
       <input id="bic" bind:value={invoice.bic} placeholder={t('payment.bic_placeholder')} />
     </div>
   </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="paymentReference">{t('payment.verwendungszweck')}</label>
+      <input id="paymentReference" bind:value={invoice.paymentReference} placeholder={t('payment.verwendungszweck_placeholder')} />
+    </div>
+    <div class="form-group">
+      <label for="accountName">{t('payment.kontoinhaber')}</label>
+      <input id="accountName" bind:value={invoice.accountName} placeholder={t('payment.kontoinhaber_placeholder')} />
+    </div>
+  </div>
   <div class="form-group">
     <label for="paymentTerms">{t('payment.zahlungsbedingungen')}</label>
     <textarea id="paymentTerms" rows="2" bind:value={invoice.paymentTerms} placeholder={t('payment.zahlungsbedingungen_placeholder')}></textarea>
