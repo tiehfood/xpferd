@@ -10,6 +10,7 @@ import partyRoutes from './routes/partyRoutes.js';
 import templateRoutes from './routes/templateRoutes.js';
 import pdfTemplateRoutes from './routes/pdfTemplateRoutes.js';
 import appSettingsRoutes from './routes/appSettingsRoutes.js';
+import importRoutes from './routes/importRoutes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -37,6 +38,7 @@ export function createApp(): express.Application {
   // API routes
   app.use('/api/v1/invoices', invoiceRoutes);
   app.use('/api/v1/invoices', exportRoutes);
+  app.use('/api/v1/invoices', importRoutes);
   app.use('/api/v1/parties', partyRoutes);
   app.use('/api/v1/templates', templateRoutes);
   app.use('/api/v1/pdf-templates', pdfTemplateRoutes);
