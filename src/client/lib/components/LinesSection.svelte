@@ -131,6 +131,13 @@
               <td class="col-nr mono">{line.lineNumber}</td>
               <td class="col-name">
                 <input bind:value={line.itemName} placeholder={t('lines.artikelbezeichnung_placeholder')} />
+                {#if line.itemDescription !== undefined && line.itemDescription !== ''}
+                  <textarea class="item-desc" rows="2" bind:value={line.itemDescription} placeholder={t('lines.beschreibung_placeholder')}></textarea>
+                {:else}
+                  <button class="add-desc-btn" type="button" onclick={() => { line.itemDescription = ''; }}>
+                    + {t('lines.beschreibung')}
+                  </button>
+                {/if}
               </td>
               <td class="col-qty">
                 <input type="number" step="0.01" min="0" bind:value={line.quantity} oninput={handleInput} />
@@ -280,5 +287,32 @@
     cursor: text;
     color: var(--text);
     font-variant-numeric: tabular-nums;
+  }
+
+  .item-desc {
+    width: 100%;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.5rem;
+    resize: vertical;
+    min-height: 40px;
+    height: auto;
+  }
+
+  .add-desc-btn {
+    display: inline-block;
+    margin-top: 0.25rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: color 0.15s;
+    outline: none;
+  }
+
+  .add-desc-btn:hover {
+    color: var(--primary);
   }
 </style>

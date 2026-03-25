@@ -7,13 +7,20 @@ const FIELD_LABELS: Record<string, string> = {
   currencyCode: 'Währung',
   dueDate: 'Fälligkeitsdatum',
   buyerReference: 'Käuferreferenz',
+  note: 'Bemerkung',
+  deliveryDate: 'Leistungsdatum',
+  orderReference: 'Bestellnummer',
+  contractReference: 'Vertragsnummer',
   paymentMeansCode: 'Zahlungsart',
   paymentTerms: 'Zahlungsbedingungen',
   iban: 'IBAN',
   bic: 'BIC',
+  paymentReference: 'Verwendungszweck',
+  accountName: 'Kontoinhaber',
   taxCategoryCode: 'USt-Kategorie',
   taxRate: 'USt-Satz',
   kleinunternehmer: 'Kleinunternehmer',
+  prepaidAmount: 'Anzahlung',
   'seller.name': 'Verkäufer — Name',
   'seller.street': 'Verkäufer — Straße',
   'seller.city': 'Verkäufer — Ort',
@@ -48,6 +55,7 @@ function formatValidationErrors(details: any[]): string {
       const fieldNames: Record<string, string> = {
         itemName: 'Bezeichnung', quantity: 'Menge', unitCode: 'Einheit',
         netPrice: 'Einzelpreis', vatCategoryCode: 'USt-Kategorie', vatRate: 'USt-Satz',
+        itemDescription: 'Beschreibung',
       };
       msg = `Position ${lineNum}: ${fieldNames[field] ?? field}`;
     } else {

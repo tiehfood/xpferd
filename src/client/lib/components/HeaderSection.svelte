@@ -13,6 +13,14 @@
 
   let invNumTemplates: any[] = $state([]);
   let previewing = $state(false);
+  let showMore = $state(false);
+
+  // Auto-expand if any additional field has a value
+  $effect(() => {
+    if (invoice.note || invoice.deliveryDate || invoice.orderReference || invoice.contractReference) {
+      showMore = true;
+    }
+  });
 
   onMount(async () => {
     try {
@@ -154,6 +162,33 @@
       </div>
     </div>
   {/if}
+
+  <div class="additional-section">
+    <button class="section-toggle" type="button" onclick={() => showMore = !showMore}>
+      <svg class="chevron" class:expanded={showMore} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      {t('header.weitere_angaben')}
+    </button>
+    {#if showMore}
+      <div class="form-group" style="margin-top: 0.85rem;">
+        <label for="note">{t('header.bemerkung')}</label>
+        <textarea id="note" rows="3" bind:value={invoice.note} placeholder={t('header.bemerkung_placeholder')}></textarea>
+      </div>
+      <div class="form-row additional-row">
+        <div class="form-group">
+          <label for="deliveryDate">{t('header.leistungsdatum')}</label>
+          <DateInput id="deliveryDate" bind:value={invoice.deliveryDate} />
+        </div>
+        <div class="form-group">
+          <label for="orderReference">{t('header.bestellnummer')}</label>
+          <input id="orderReference" bind:value={invoice.orderReference} placeholder={t('header.bestellnummer_placeholder')} />
+        </div>
+        <div class="form-group">
+          <label for="contractReference">{t('header.vertragsnummer')}</label>
+          <input id="contractReference" bind:value={invoice.contractReference} placeholder={t('header.vertragsnummer_placeholder')} />
+        </div>
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -265,5 +300,43 @@
     font-weight: 700;
     letter-spacing: 0.03em;
     white-space: nowrap;
+  }
+
+  .additional-section {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: none;
+    border: none;
+    padding: 0.25rem 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.15s;
+    font-family: var(--font-body), sans-serif;
+    outline: none;
+  }
+
+  .section-toggle:hover {
+    color: var(--text);
+  }
+
+  .chevron {
+    transition: transform 0.2s var(--ease-out);
+  }
+
+  .chevron.expanded {
+    transform: rotate(90deg);
+  }
+
+  .additional-row {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 </style>

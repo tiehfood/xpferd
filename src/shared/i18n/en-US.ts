@@ -8,6 +8,7 @@ const enUs = {
   'settings.zahlenformat': 'Number Format',
   'settings.deutsch': 'German',
   'settings.englisch': 'English',
+  'settings.locale.name': 'English',
   'settings.speichern': 'Save',
   'settings.speichern_laufend': 'Saving...',
   'settings.gespeichert': 'Settings saved',
@@ -25,6 +26,21 @@ const enUs = {
   'sidebar.positionen': 'Line Items',
   'sidebar.zahlungsarten': 'Payment Methods',
   'sidebar.nummernvorlagen': 'Number Templates',
+  'sidebar.import': 'XML Import',
+
+  // ── Import ────────────────────────────────────────────────────────────────
+  'import.title': 'XML Import',
+  'import.subtitle': 'Import XRechnung or ZUGFeRD XML',
+  'import.datei_waehlen': 'Select XML file',
+  'import.oder_einfuegen': 'or paste XML here',
+  'import.importieren': 'Import & Edit',
+  'import.vorschau': 'Preview',
+  'import.fehler': 'Import failed',
+  'import.format_erkannt': 'Format detected',
+  'import.ubl': 'UBL 2.1',
+  'import.cii': 'CII/ZUGFeRD',
+  'import.keine_datei': 'Please select an XML file or paste XML content.',
+  'import.wird_analysiert': 'Analyzing XML...',
 
   // ── HeaderSection ─────────────────────────────────────────────────────────
   'header.card_title': 'Invoice Details',
@@ -40,6 +56,14 @@ const enUs = {
   'header.ust_satz': 'VAT Rate %',
   'header.nummernvorlage_placeholder': 'Number template…',
   'header.wird_beim_speichern_vergeben': 'Assigned on save',
+  'header.bemerkung': 'Note',
+  'header.bemerkung_placeholder': 'Additional invoice notes',
+  'header.leistungsdatum': 'Delivery Date',
+  'header.bestellnummer': 'Purchase Order (BT-13)',
+  'header.bestellnummer_placeholder': 'e.g. PO-2024-001',
+  'header.vertragsnummer': 'Contract Reference (BT-12)',
+  'header.vertragsnummer_placeholder': 'e.g. V-2024-001',
+  'header.weitere_angaben': 'Additional Details',
 
   // ── PartySection ──────────────────────────────────────────────────────────
   'party.laden': 'Loading...',
@@ -64,6 +88,8 @@ const enUs = {
   'lines.gesamt': 'Total',
   'lines.artikelbezeichnung_placeholder': 'Item description',
   'lines.position_entfernen': 'Remove item',
+  'lines.beschreibung': 'Description',
+  'lines.beschreibung_placeholder': 'Detailed item description',
 
   // ── PaymentSection ────────────────────────────────────────────────────────
   'payment.card_title': 'Payment',
@@ -74,6 +100,10 @@ const enUs = {
   'payment.bic_placeholder': 'COBADEFFXXX',
   'payment.zahlungsbedingungen': 'Payment Terms',
   'payment.zahlungsbedingungen_placeholder': 'Payable within 30 days',
+  'payment.verwendungszweck': 'Payment Reference',
+  'payment.verwendungszweck_placeholder': 'e.g. RE-2024-0042',
+  'payment.kontoinhaber': 'Account Name',
+  'payment.kontoinhaber_placeholder': 'Name of account holder',
 
   // ── TotalsSection ─────────────────────────────────────────────────────────
   'totals.card_title': 'Totals',
@@ -81,6 +111,8 @@ const enUs = {
   'totals.ust': 'VAT',
   'totals.umsatzsteuer_entfaellt': 'VAT exempt',
   'totals.gesamtbetrag': 'Total Amount',
+  'totals.anzahlung': 'Prepaid Amount',
+  'totals.zahlbetrag': 'Amount Due',
 
   // ── App (navigation / layout) ─────────────────────────────────────────────
   'nav.pdf_leinwand': 'PDF Canvas',
