@@ -69,6 +69,21 @@
   }
 
   onMount(async () => {
+    // Check for imported invoice data from ImportPage
+    const importData = sessionStorage.getItem('import-invoice');
+    if (importData && !params.id) {
+      try {
+        const imported = JSON.parse(importData);
+        invoice = { ...createEmpty(), ...imported, id: undefined };
+        if (invoice.iban) invoice.iban = formatIban(invoice.iban);
+        recalculate();
+      } catch {
+        // ignore malformed import data
+      } finally {
+        sessionStorage.removeItem('import-invoice');
+      }
+    }
+
     if (params.id) {
       try {
         invoice = await invoiceApi.get(Number(params.id));
