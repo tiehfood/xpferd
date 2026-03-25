@@ -29,6 +29,7 @@ const invoiceLineSchema = z.object({
   quantity: z.number().positive(),
   unitCode: z.string().min(1),
   itemName: z.string().min(1),
+  itemDescription: z.string().optional(),
   netPrice: z.number().min(0),
   vatCategoryCode: z.string().min(1),
   vatRate: z.number().min(0),
@@ -42,6 +43,10 @@ export const invoiceSchema = z.object({
   currencyCode: z.string().length(3),
   dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
   buyerReference: z.string().optional().or(z.literal('')),
+  note: z.string().optional(),
+  deliveryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
+  orderReference: z.string().optional(),
+  contractReference: z.string().optional(),
 
   seller: sellerSchema,
   buyer: buyerSchema,
@@ -56,11 +61,14 @@ export const invoiceSchema = z.object({
     (val) => !val || validator.isBIC(val),
     { message: 'Ungültiger BIC' },
   ),
+  paymentReference: z.string().optional(),
+  accountName: z.string().optional(),
 
   taxCategoryCode: z.string().min(1),
   taxRate: z.number().min(0),
 
   kleinunternehmer: z.boolean(),
+  prepaidAmount: z.number().min(0).optional(),
 
   lines: z.array(invoiceLineSchema).min(1),
 }).refine(
