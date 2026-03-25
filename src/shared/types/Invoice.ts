@@ -44,6 +44,7 @@ export interface InvoiceLineDto {
   quantity: number;
   unitCode: string;                // BT-130 (UN/ECE Recommendation 20)
   itemName: string;                // BT-153
+  itemDescription?: string;         // BT-154 Item description
   netPrice: number;                // BT-146
   vatCategoryCode: string;         // BT-151
   vatRate: number;                 // BT-152
@@ -62,6 +63,10 @@ export interface InvoiceDto {
   currencyCode: string;            // BT-5
   dueDate?: string;                // BT-9
   buyerReference: string;          // BT-10 (Leitweg-ID)
+  note?: string;                    // BT-22 Invoice note
+  deliveryDate?: string;            // BT-72 YYYY-MM-DD (Leistungsdatum)
+  orderReference?: string;          // BT-13 Purchase order reference (Bestellnummer)
+  contractReference?: string;       // BT-12 Contract reference (Vertragsnummer)
 
   // Seller (BG-4)
   seller: SellerDto;
@@ -74,6 +79,8 @@ export interface InvoiceDto {
   paymentTerms?: string;           // BT-20
   iban?: string;                   // BT-84
   bic?: string;                    // BT-86
+  paymentReference?: string;        // BT-83 Remittance information (Verwendungszweck)
+  accountName?: string;             // BT-85 Payment account name
 
   // Tax (BG-23)
   taxCategoryCode: string;         // BT-118
@@ -87,6 +94,7 @@ export interface InvoiceDto {
   totalTaxAmount?: number;         // BT-110
   totalGrossAmount?: number;       // BT-112
   amountDue?: number;              // BT-115
+  prepaidAmount?: number;           // BT-113 Paid amount (Anzahlung)
 
   // Line items (BG-25)
   lines: InvoiceLineDto[];
