@@ -29,10 +29,16 @@ interface InvoiceRow {
   buyer_country_code: string;
   buyer_vat_id: string | null;
   buyer_email: string | null;
+  note: string | null;
+  delivery_date: string | null;
+  order_reference: string | null;
+  contract_reference: string | null;
   payment_means_code: string;
   payment_terms: string | null;
   iban: string | null;
   bic: string | null;
+  payment_reference: string | null;
+  account_name: string | null;
   tax_category_code: string;
   tax_rate: number;
   kleinunternehmer: number;
@@ -40,6 +46,7 @@ interface InvoiceRow {
   total_tax_amount: number;
   total_gross_amount: number;
   amount_due: number;
+  prepaid_amount: number;
 }
 
 export class InvoiceModel {
@@ -77,21 +84,23 @@ export class InvoiceModel {
     const result = this.db.prepare(`
       INSERT INTO invoices (
         invoice_number, invoice_date, invoice_type_code, currency_code, due_date, buyer_reference,
+        note, delivery_date, order_reference, contract_reference,
         seller_name, seller_street, seller_city, seller_postal_code, seller_country_code,
         seller_vat_id, seller_tax_number, seller_contact_name, seller_contact_phone, seller_contact_email,
         buyer_name, buyer_street, buyer_city, buyer_postal_code, buyer_country_code, buyer_vat_id, buyer_email,
-        payment_means_code, payment_terms, iban, bic,
+        payment_means_code, payment_terms, iban, bic, payment_reference, account_name,
         tax_category_code, tax_rate, kleinunternehmer,
-        total_net_amount, total_tax_amount, total_gross_amount, amount_due
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        total_net_amount, total_tax_amount, total_gross_amount, amount_due, prepaid_amount
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       dto.invoiceNumber, dto.invoiceDate, dto.invoiceTypeCode, dto.currencyCode, dto.dueDate ?? null, dto.buyerReference ?? '',
+      dto.note ?? null, dto.deliveryDate ?? null, dto.orderReference ?? null, dto.contractReference ?? null,
       dto.seller.name, dto.seller.street, dto.seller.city, dto.seller.postalCode, dto.seller.countryCode,
       dto.seller.vatId ?? null, dto.seller.taxNumber ?? null, dto.seller.contactName ?? null, dto.seller.contactPhone ?? null, dto.seller.contactEmail ?? null,
       dto.buyer.name, dto.buyer.street, dto.buyer.city, dto.buyer.postalCode, dto.buyer.countryCode, dto.buyer.vatId ?? null, dto.buyer.email ?? null,
-      dto.paymentMeansCode, dto.paymentTerms ?? null, dto.iban ?? null, dto.bic ?? null,
+      dto.paymentMeansCode, dto.paymentTerms ?? null, dto.iban ?? null, dto.bic ?? null, dto.paymentReference ?? null, dto.accountName ?? null,
       dto.taxCategoryCode, dto.taxRate, dto.kleinunternehmer ? 1 : 0,
-      dto.totalNetAmount ?? 0, dto.totalTaxAmount ?? 0, dto.totalGrossAmount ?? 0, dto.amountDue ?? 0,
+      dto.totalNetAmount ?? 0, dto.totalTaxAmount ?? 0, dto.totalGrossAmount ?? 0, dto.amountDue ?? 0, dto.prepaidAmount ?? 0,
     );
 
     const invoiceId = result.lastInsertRowid as number;
@@ -109,22 +118,24 @@ export class InvoiceModel {
     this.db.prepare(`
       UPDATE invoices SET
         invoice_number = ?, invoice_date = ?, invoice_type_code = ?, currency_code = ?, due_date = ?, buyer_reference = ?,
+        note = ?, delivery_date = ?, order_reference = ?, contract_reference = ?,
         seller_name = ?, seller_street = ?, seller_city = ?, seller_postal_code = ?, seller_country_code = ?,
         seller_vat_id = ?, seller_tax_number = ?, seller_contact_name = ?, seller_contact_phone = ?, seller_contact_email = ?,
         buyer_name = ?, buyer_street = ?, buyer_city = ?, buyer_postal_code = ?, buyer_country_code = ?, buyer_vat_id = ?, buyer_email = ?,
-        payment_means_code = ?, payment_terms = ?, iban = ?, bic = ?,
+        payment_means_code = ?, payment_terms = ?, iban = ?, bic = ?, payment_reference = ?, account_name = ?,
         tax_category_code = ?, tax_rate = ?, kleinunternehmer = ?,
-        total_net_amount = ?, total_tax_amount = ?, total_gross_amount = ?, amount_due = ?,
+        total_net_amount = ?, total_tax_amount = ?, total_gross_amount = ?, amount_due = ?, prepaid_amount = ?,
         updated_at = datetime('now')
       WHERE id = ?
     `).run(
       dto.invoiceNumber, dto.invoiceDate, dto.invoiceTypeCode, dto.currencyCode, dto.dueDate ?? null, dto.buyerReference ?? '',
+      dto.note ?? null, dto.deliveryDate ?? null, dto.orderReference ?? null, dto.contractReference ?? null,
       dto.seller.name, dto.seller.street, dto.seller.city, dto.seller.postalCode, dto.seller.countryCode,
       dto.seller.vatId ?? null, dto.seller.taxNumber ?? null, dto.seller.contactName ?? null, dto.seller.contactPhone ?? null, dto.seller.contactEmail ?? null,
       dto.buyer.name, dto.buyer.street, dto.buyer.city, dto.buyer.postalCode, dto.buyer.countryCode, dto.buyer.vatId ?? null, dto.buyer.email ?? null,
-      dto.paymentMeansCode, dto.paymentTerms ?? null, dto.iban ?? null, dto.bic ?? null,
+      dto.paymentMeansCode, dto.paymentTerms ?? null, dto.iban ?? null, dto.bic ?? null, dto.paymentReference ?? null, dto.accountName ?? null,
       dto.taxCategoryCode, dto.taxRate, dto.kleinunternehmer ? 1 : 0,
-      dto.totalNetAmount ?? 0, dto.totalTaxAmount ?? 0, dto.totalGrossAmount ?? 0, dto.amountDue ?? 0,
+      dto.totalNetAmount ?? 0, dto.totalTaxAmount ?? 0, dto.totalGrossAmount ?? 0, dto.amountDue ?? 0, dto.prepaidAmount ?? 0,
       id,
     );
 
@@ -148,6 +159,10 @@ export class InvoiceModel {
       currencyCode: row.currency_code,
       dueDate: row.due_date ?? undefined,
       buyerReference: row.buyer_reference,
+      note: row.note ?? undefined,
+      deliveryDate: row.delivery_date ?? undefined,
+      orderReference: row.order_reference ?? undefined,
+      contractReference: row.contract_reference ?? undefined,
       seller: {
         name: row.seller_name,
         street: row.seller_street,
@@ -173,6 +188,8 @@ export class InvoiceModel {
       paymentTerms: row.payment_terms ?? undefined,
       iban: row.iban ?? undefined,
       bic: row.bic ?? undefined,
+      paymentReference: row.payment_reference ?? undefined,
+      accountName: row.account_name ?? undefined,
       taxCategoryCode: row.tax_category_code,
       taxRate: row.tax_rate,
       kleinunternehmer: Boolean(row.kleinunternehmer),
@@ -180,6 +197,7 @@ export class InvoiceModel {
       totalTaxAmount: row.total_tax_amount,
       totalGrossAmount: row.total_gross_amount,
       amountDue: row.amount_due,
+      prepaidAmount: row.prepaid_amount,
       lines,
     };
   }

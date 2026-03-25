@@ -8,6 +8,7 @@ interface InvoiceLineRow {
   quantity: number;
   unit_code: string;
   item_name: string;
+  item_description: string | null;
   net_price: number;
   vat_category_code: string;
   vat_rate: number;
@@ -27,8 +28,8 @@ export class InvoiceLineModel {
   replaceForInvoice(invoiceId: number, lines: InvoiceLineDto[]): void {
     this.db.prepare('DELETE FROM invoice_lines WHERE invoice_id = ?').run(invoiceId);
     const insert = this.db.prepare(`
-      INSERT INTO invoice_lines (invoice_id, line_number, quantity, unit_code, item_name, net_price, vat_category_code, vat_rate, line_net_amount)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO invoice_lines (invoice_id, line_number, quantity, unit_code, item_name, item_description, net_price, vat_category_code, vat_rate, line_net_amount)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     for (const line of lines) {
       insert.run(
@@ -37,6 +38,7 @@ export class InvoiceLineModel {
         line.quantity,
         line.unitCode,
         line.itemName,
+        line.itemDescription ?? null,
         line.netPrice,
         line.vatCategoryCode,
         line.vatRate,
@@ -53,6 +55,7 @@ export class InvoiceLineModel {
       quantity: row.quantity,
       unitCode: row.unit_code,
       itemName: row.item_name,
+      itemDescription: row.item_description ?? undefined,
       netPrice: row.net_price,
       vatCategoryCode: row.vat_category_code,
       vatRate: row.vat_rate,

@@ -205,5 +205,15 @@ export class Database {
     addColumnIfMissing('pdf_templates', 'margin_right',  'REAL DEFAULT 2.5');
     addColumnIfMissing('pdf_templates', 'margin_top',    'REAL DEFAULT 2.5');
     addColumnIfMissing('pdf_templates', 'margin_bottom', 'REAL DEFAULT 2.5');
+
+    // Invoice field migrations (Tier 1+2 — EN 16931)
+    addColumnIfMissing('invoices', 'note', 'TEXT');
+    addColumnIfMissing('invoices', 'delivery_date', 'TEXT');
+    addColumnIfMissing('invoices', 'order_reference', 'TEXT');
+    addColumnIfMissing('invoices', 'contract_reference', 'TEXT');
+    addColumnIfMissing('invoices', 'payment_reference', 'TEXT');
+    addColumnIfMissing('invoices', 'account_name', 'TEXT');
+    addColumnIfMissing('invoices', 'prepaid_amount', 'REAL DEFAULT 0');
+    addColumnIfMissing('invoice_lines', 'item_description', 'TEXT');
   }
 }
