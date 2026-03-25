@@ -8,6 +8,7 @@
   import PdfBuilderPage from './pages/PdfBuilderPage.svelte';
   import InvoiceTemplateEditPage from './pages/InvoiceTemplateEditPage.svelte';
   import SettingsPage from './pages/SettingsPage.svelte';
+  import ImportPage from './pages/ImportPage.svelte';
   import { loadSettings } from './lib/settingsStore.svelte.js';
 
   // Load settings on app startup so they're available everywhere
@@ -17,6 +18,7 @@
     '/': DashboardPage,
     '/invoices/new': InvoiceEditPage,
     '/invoices/:id': InvoiceEditPage,
+    '/import': ImportPage,
     '/sellers': PartiesPage,
     '/buyers': PartiesPage,
     '/templates': TemplatesPage,
