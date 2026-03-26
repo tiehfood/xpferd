@@ -1,5 +1,5 @@
 import type BetterSqlite3 from 'better-sqlite3';
-import type { InvoiceDto, InvoiceSummaryDto } from '../../shared/types';
+import type { InvoiceDto, InvoiceSummaryDto, SellerDto, BuyerDto } from '../../shared/types';
 import { InvoiceLineModel } from './InvoiceLine.js';
 
 interface InvoiceRow {
@@ -146,6 +146,46 @@ export class InvoiceModel {
   delete(id: number): boolean {
     const result = this.db.prepare('DELETE FROM invoices WHERE id = ?').run(id);
     return result.changes > 0;
+  }
+
+  /**
+   * Update all invoices whose seller matches oldName + oldCity with new party data.
+   * Called by PartyService.update() to propagate seller changes to existing invoices.
+   */
+  updateSellerByMatch(oldName: string, oldCity: string, newParty: SellerDto): number {
+    const result = this.db.prepare(`
+      UPDATE invoices SET
+        seller_name = ?, seller_street = ?, seller_city = ?, seller_postal_code = ?,
+        seller_country_code = ?, seller_vat_id = ?, seller_tax_number = ?,
+        seller_contact_name = ?, seller_contact_phone = ?, seller_contact_email = ?,
+        updated_at = datetime('now')
+      WHERE seller_name = ? AND seller_city = ?
+    `).run(
+      newParty.name, newParty.street, newParty.city, newParty.postalCode,
+      newParty.countryCode, newParty.vatId ?? null, newParty.taxNumber ?? null,
+      newParty.contactName ?? null, newParty.contactPhone ?? null, newParty.contactEmail ?? null,
+      oldName, oldCity,
+    );
+    return result.changes;
+  }
+
+  /**
+   * Update all invoices whose buyer matches oldName + oldCity with new party data.
+   * Called by PartyService.update() to propagate buyer changes to existing invoices.
+   */
+  updateBuyerByMatch(oldName: string, oldCity: string, newParty: BuyerDto): number {
+    const result = this.db.prepare(`
+      UPDATE invoices SET
+        buyer_name = ?, buyer_street = ?, buyer_city = ?, buyer_postal_code = ?,
+        buyer_country_code = ?, buyer_vat_id = ?, buyer_email = ?,
+        updated_at = datetime('now')
+      WHERE buyer_name = ? AND buyer_city = ?
+    `).run(
+      newParty.name, newParty.street, newParty.city, newParty.postalCode,
+      newParty.countryCode, newParty.vatId ?? null, newParty.email ?? null,
+      oldName, oldCity,
+    );
+    return result.changes;
   }
 
   private toDto(row: InvoiceRow, lines: InvoiceDto['lines']): InvoiceDto {
