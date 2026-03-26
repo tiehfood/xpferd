@@ -2,7 +2,7 @@
   import { push } from 'svelte-spa-router';
   import { importApi } from '../lib/api/importApi.js';
   import { t } from '../lib/i18n.js';
-  import { fmtCurrency } from '../../shared/constants/format.js';
+  import { fmtCurrency, fmtDate } from '../../shared/constants/format.js';
   import { getSettings } from '../lib/settingsStore.svelte.js';
 
   let xmlContent = $state('');
@@ -180,7 +180,7 @@
         </div>
         <div class="preview-item">
           <span class="preview-label">Datum</span>
-          <span class="preview-value">{preview.invoiceDate || '—'}</span>
+          <span class="preview-value">{preview.invoiceDate ? fmtDate(preview.invoiceDate, getSettings().dateFormat) : '—'}</span>
         </div>
         <div class="preview-item">
           <span class="preview-label">Verkäufer</span>
