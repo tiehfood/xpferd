@@ -24,11 +24,19 @@ const controller = new ImportController();
  *                 description: Raw XRechnung or ZUGFeRD/UBL XML content
  *     responses:
  *       200:
- *         description: Parsed invoice preview (not saved to DB)
+ *         description: Parsed invoice preview with warnings (not saved to DB)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/InvoiceDto'
+ *               type: object
+ *               properties:
+ *                 invoice:
+ *                   $ref: '#/components/schemas/InvoiceDto'
+ *                 warnings:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Non-fatal warnings about the parsed invoice (e.g. missing contact, invalid IBAN)
  *       400:
  *         description: Missing or malformed XML
  *         content:

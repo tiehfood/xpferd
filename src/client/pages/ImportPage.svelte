@@ -10,6 +10,7 @@
   let loading = $state(false);
   let error = $state('');
   let preview: any = $state(null);
+  let warnings: string[] = $state([]);
   let dragOver = $state(false);
 
   function handleFileSelect(e: Event) {
@@ -23,6 +24,7 @@
     fileName = file.name;
     error = '';
     preview = null;
+    warnings = [];
     const reader = new FileReader();
     reader.onload = () => {
       xmlContent = reader.result as string;
@@ -59,8 +61,11 @@
     loading = true;
     error = '';
     preview = null;
+    warnings = [];
     try {
-      preview = await importApi.preview(xmlContent);
+      const result = await importApi.preview(xmlContent);
+      preview = result.invoice;
+      warnings = result.warnings ?? [];
     } catch (e: any) {
       error = e.message;
     } finally {
@@ -71,6 +76,9 @@
   function handleImport() {
     if (!preview) return;
     sessionStorage.setItem('import-invoice', JSON.stringify(preview));
+    if (warnings.length > 0) {
+      sessionStorage.setItem('import-warnings', JSON.stringify(warnings));
+    }
     push('/invoices/new');
   }
 </script>
@@ -150,6 +158,23 @@
   {#if preview}
     <div class="card preview-card">
       <div class="card-header">{t('import.vorschau')}</div>
+
+      {#if warnings.length > 0}
+        <div class="warnings-section">
+          <div class="warnings-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            {warnings.length} {warnings.length === 1 ? 'Hinweis' : 'Hinweise'}
+          </div>
+          <ul class="warnings-list">
+            {#each warnings as w}
+              <li>{w}</li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
 
       <div class="preview-grid">
         <div class="preview-item">
@@ -435,5 +460,52 @@
 
   .import-btn {
     padding: 0.55rem 1.5rem;
+  }
+
+  .warnings-section {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.2s var(--ease-out);
+  }
+
+  .warnings-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #92400e;
+    margin-bottom: 0.4rem;
+  }
+
+  .warnings-header svg {
+    color: #d97706;
+    flex-shrink: 0;
+  }
+
+  .warnings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .warnings-list li {
+    font-size: 0.75rem;
+    color: #92400e;
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .warnings-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0.35rem;
+    color: #d97706;
   }
 </style>
