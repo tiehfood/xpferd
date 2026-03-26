@@ -1,4 +1,4 @@
-FROM node:24-alpine
+FROM node:25-alpine
 RUN corepack enable
 WORKDIR /app
 CMD ["sh", "-c", "pnpm install && tail -f /dev/null"]

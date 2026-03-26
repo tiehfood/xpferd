@@ -1,4 +1,4 @@
-FROM node:24-alpine AS base
+FROM node:25-alpine AS base
 RUN apk add --no-cache python3 make g++
 RUN corepack enable
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN npx tsc -p tsconfig.server.json
 RUN CI=true pnpm prune --prod
 
 # Production stage
-FROM node:24-alpine AS production
+FROM node:25-alpine AS production
 RUN apk add --no-cache tini
 WORKDIR /app
 
