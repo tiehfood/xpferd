@@ -76,9 +76,6 @@
   function handleImport() {
     if (!preview) return;
     sessionStorage.setItem('import-invoice', JSON.stringify(preview));
-    if (warnings.length > 0) {
-      sessionStorage.setItem('import-warnings', JSON.stringify(warnings));
-    }
     push('/invoices/new');
   }
 </script>
