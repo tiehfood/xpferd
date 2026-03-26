@@ -42,6 +42,7 @@ About the name: The "X" was taken from XRechnung obviously and part of ZUGFeRD i
 - Duplicate invoices or create from templates
 - Swagger API documentation at `/api-docs`
 - Support for Germany and English language
+- Import existing XML invoices (XRechnung & UBL)
 
 ## Screenshots
 | ![Screenshot01](docs/screenshots/screen1.png) | ![Screenshot02](docs/screenshots/screen2.png) |
