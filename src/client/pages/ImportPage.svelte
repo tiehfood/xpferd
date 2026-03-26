@@ -30,7 +30,7 @@
       xmlContent = reader.result as string;
     };
     reader.onerror = () => {
-      error = 'Datei konnte nicht gelesen werden';
+      error = t('import.datei_fehler');
     };
     reader.readAsText(file);
   }
@@ -104,7 +104,7 @@
       class="drop-zone"
       role="button"
       tabindex="0"
-      aria-label="XML-Datei auswählen"
+      aria-label={t('import.datei_waehlen')}
       class:drag-over={dragOver}
       ondrop={handleDrop}
       ondragover={handleDragOver}
@@ -121,8 +121,8 @@
       {#if fileName}
         <span class="file-name">{fileName}</span>
       {:else}
-        <span class="drop-text">XML-Datei hierher ziehen oder klicken</span>
-        <span class="drop-hint">.xml (XRechnung / UBL / CII)</span>
+        <span class="drop-text">{t('import.drop_text')}</span>
+        <span class="drop-hint">{t('import.drop_hint')}</span>
       {/if}
     </div>
 
@@ -163,7 +163,7 @@
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
               <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-            {warnings.length} {warnings.length === 1 ? 'Hinweis' : 'Hinweise'}
+            {warnings.length} {warnings.length === 1 ? t('import.hinweis') : t('import.hinweise')}
           </div>
           <ul class="warnings-list">
             {#each warnings as w}
@@ -175,32 +175,32 @@
 
       <div class="preview-grid">
         <div class="preview-item">
-          <span class="preview-label">Rechnungsnr.</span>
+          <span class="preview-label">{t('import.rechnungsnr')}</span>
           <span class="preview-value">{preview.invoiceNumber || '—'}</span>
         </div>
         <div class="preview-item">
-          <span class="preview-label">Datum</span>
+          <span class="preview-label">{t('import.datum')}</span>
           <span class="preview-value">{preview.invoiceDate ? fmtDate(preview.invoiceDate, getSettings().dateFormat) : '—'}</span>
         </div>
         <div class="preview-item">
-          <span class="preview-label">Verkäufer</span>
+          <span class="preview-label">{t('import.verkaeufer')}</span>
           <span class="preview-value">{preview.seller?.name || '—'}</span>
         </div>
         <div class="preview-item">
-          <span class="preview-label">Käufer</span>
+          <span class="preview-label">{t('import.kaeufer')}</span>
           <span class="preview-value">{preview.buyer?.name || '—'}</span>
         </div>
         <div class="preview-item">
-          <span class="preview-label">Positionen</span>
+          <span class="preview-label">{t('import.positionen')}</span>
           <span class="preview-value">{preview.lines?.length ?? 0}</span>
         </div>
         <div class="preview-item">
-          <span class="preview-label">Bruttobetrag</span>
+          <span class="preview-label">{t('import.bruttobetrag')}</span>
           <span class="preview-value mono">{fmtCurrency(preview.totalGrossAmount ?? 0, preview.currencyCode ?? 'EUR', getSettings().numberFormat)}</span>
         </div>
         {#if preview.note}
           <div class="preview-item full-width">
-            <span class="preview-label">Bemerkung</span>
+            <span class="preview-label">{t('import.bemerkung')}</span>
             <span class="preview-value">{preview.note}</span>
           </div>
         {/if}
@@ -212,10 +212,10 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Bezeichnung</th>
-                <th class="text-right">Menge</th>
-                <th class="text-right">Einzelpreis</th>
-                <th class="text-right">Gesamt</th>
+                <th>{t('import.bezeichnung')}</th>
+                <th class="text-right">{t('import.menge')}</th>
+                <th class="text-right">{t('import.einzelpreis')}</th>
+                <th class="text-right">{t('import.gesamt')}</th>
               </tr>
             </thead>
             <tbody>
