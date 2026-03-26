@@ -1,11 +1,38 @@
 /**
  * Lightweight invoice warning checks — runs on both client and server.
- * No external dependencies. For strict IBAN checksum validation, see
- * the server-side ImportWarningService which uses the `validator` lib.
+ * No external dependencies. Full IBAN Mod-97 checksum validation included.
  */
 
 /** Basic IBAN format: 2 uppercase letters + 2 digits + 11-30 alphanumeric chars */
 const IBAN_RE = /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/;
+
+/**
+ * Validate an IBAN using the ISO 7064 Mod-97-10 algorithm.
+ * Algorithm:
+ *  1. Move the first 4 characters (country + check digits) to the end.
+ *  2. Replace each letter with its numeric equivalent: A=10, B=11, ..., Z=35.
+ *  3. Compute the number mod 97 using chunked string arithmetic (avoids
+ *     BigInt — not universally available in all client environments).
+ *  4. A valid IBAN yields a remainder of 1.
+ *
+ * @param iban - whitespace-free, uppercase IBAN string
+ */
+function validateIbanChecksum(iban: string): boolean {
+  // Rearrange: move first 4 chars to end
+  const rearranged = iban.slice(4) + iban.slice(0, 4);
+
+  // Convert letters to digits: A→10, B→11, ..., Z→35
+  const numeric = rearranged.replace(/[A-Z]/g, (ch) => String(ch.charCodeAt(0) - 55));
+
+  // Compute numeric mod 97 using 9-digit chunks to avoid precision loss
+  let remainder = 0;
+  for (let i = 0; i < numeric.length; i += 7) {
+    const chunk = String(remainder) + numeric.slice(i, i + 7);
+    remainder = parseInt(chunk, 10) % 97;
+  }
+
+  return remainder === 1;
+}
 
 /** BIC/SWIFT: 4 letters (bank) + 2 letters (country) + 2 alphanum (location) + optional 3 alphanum (branch) */
 const BIC_RE = /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/;
@@ -32,7 +59,7 @@ export function checkInvoiceWarnings(invoice: any): InvoiceWarning[] {
   // ── IBAN ──────────────────────────────────────────────────────
   if (invoice.iban) {
     const cleaned = invoice.iban.replace(/\s/g, '');
-    if (!IBAN_RE.test(cleaned)) {
+    if (!IBAN_RE.test(cleaned) || !validateIbanChecksum(cleaned)) {
       warnings.push({ field: 'iban', message: `IBAN ungültig: ${invoice.iban}` });
     }
   }
