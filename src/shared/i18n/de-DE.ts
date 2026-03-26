@@ -30,7 +30,7 @@ const deDe = {
 
   // ── Import ────────────────────────────────────────────────────────────────
   'import.title': 'XML-Import',
-  'import.subtitle': 'XRechnung oder ZUGFeRD-XML importieren',
+  'import.subtitle': 'XRechnung-XML importieren (UBL 2.1 / CII)',
   'import.datei_waehlen': 'XML-Datei auswählen',
   'import.oder_einfuegen': 'oder XML hier einfügen',
   'import.importieren': 'Importieren & Bearbeiten',
@@ -38,7 +38,7 @@ const deDe = {
   'import.fehler': 'Import fehlgeschlagen',
   'import.format_erkannt': 'Format erkannt',
   'import.ubl': 'UBL 2.1',
-  'import.cii': 'CII/ZUGFeRD',
+  'import.cii': 'CII',
   'import.keine_datei': 'Bitte wählen Sie eine XML-Datei aus oder fügen Sie XML-Inhalt ein.',
   'import.wird_analysiert': 'XML wird analysiert...',
 

@@ -30,7 +30,7 @@ const enUs = {
 
   // ── Import ────────────────────────────────────────────────────────────────
   'import.title': 'XML Import',
-  'import.subtitle': 'Import XRechnung or ZUGFeRD XML',
+  'import.subtitle': 'Import XRechnung XML (UBL 2.1 / CII)',
   'import.datei_waehlen': 'Select XML file',
   'import.oder_einfuegen': 'or paste XML here',
   'import.importieren': 'Import & Edit',
@@ -38,7 +38,7 @@ const enUs = {
   'import.fehler': 'Import failed',
   'import.format_erkannt': 'Format detected',
   'import.ubl': 'UBL 2.1',
-  'import.cii': 'CII/ZUGFeRD',
+  'import.cii': 'CII',
   'import.keine_datei': 'Please select an XML file or paste XML content.',
   'import.wird_analysiert': 'Analyzing XML...',
 

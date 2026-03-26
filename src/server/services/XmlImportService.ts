@@ -3,7 +3,7 @@
  *
  * Supports two formats:
  *  • UBL 2.1  (root element: Invoice / ubl:Invoice)
- *  • CII      (root element: rsm:CrossIndustryInvoice — ZUGFeRD / Factur-X)
+ *  • CII      (root element: rsm:CrossIndustryInvoice — Cross-Industry Invoice)
  *
  * This service does NOT save to the database. The caller is responsible for
  * deciding whether to persist the returned InvoiceDto.
@@ -86,7 +86,7 @@ function orUndef(s: string): string | undefined {
 
 export class XmlImportService {
   /**
-   * Parse an XML string (auto-detects UBL 2.1 vs CII/ZUGFeRD) and return a
+   * Parse an XML string (auto-detects UBL 2.1 vs CII) and return a
    * populated InvoiceDto.
    *
    * The returned DTO is NOT saved to the database — the caller decides whether
@@ -120,7 +120,7 @@ export class XmlImportService {
     const keys = Object.keys(obj);
     // UBL 2.1 Invoice — with or without a namespace prefix
     if (keys.some(k => k === 'Invoice' || k.endsWith(':Invoice'))) return 'ubl';
-    // CII / ZUGFeRD — rsm:CrossIndustryInvoice (or similar prefixes)
+    // CII — rsm:CrossIndustryInvoice (or similar prefixes)
     if (keys.some(k => k.includes('CrossIndustryInvoice'))) return 'cii';
     throw new Error(
       'Unbekanntes XML-Format: Weder UBL 2.1 (Invoice) noch CII (CrossIndustryInvoice) erkannt',
@@ -377,7 +377,7 @@ export class XmlImportService {
   }
 
   // ---------------------------------------------------------------------------
-  // CII / ZUGFeRD parser
+  // CII parser
   // ---------------------------------------------------------------------------
 
   private parseCii(obj: Record<string, unknown>): InvoiceDto {
