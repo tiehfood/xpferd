@@ -50,21 +50,21 @@ About the name: The "X" was taken from XRechnung obviously and part of ZUGFeRD i
 | ![Screenshot03](docs/screenshots/screen3.png) | ![Screenshot04](docs/screenshots/screen4.png) |
 
 
-## Docker images
-**Latest image**: `tiehfood/xpferd:latest`  
-**Specific version**: `tiehfood/xpferd:v1.0.2`
+## Docker image
+**Latest:** [tiehfood/xpferd:latest](https://hub.docker.com/repository/docker/tiehfood/xpferd/tags/latest/)  
+*(or specific tag from release page, just the number without the leading `v`)*
 
 ## Quick Start
 
 ```bash
-# Development
-docker-compose up dev
+# Minimal
+docker run -v xpferd:/app/data -p 3000:3000 tiehfood/xpferd:latest
 
 # Production
 docker-compose up production
 
-# Minimal
-docker run --rm -it -v xpferd:/app/data -p 3000:3000 tiehfood/xpferd:latest
+# Development
+docker-compose up dev
 ```
 
 The app is available at `http://localhost:3000` for production.
