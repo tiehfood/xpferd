@@ -51,17 +51,55 @@ export const VAT_CATEGORY_CODES: Record<string, string> = {
 
 /** UN/ECE Recommendation 20 — Mengeneinheiten */
 export const UNIT_CODES: Record<string, string> = {
+  // Stückzahlen / Allgemein
   'C62': 'Stück',
-  'HUR': 'Stunde',
-  'DAY': 'Tag',
-  'MON': 'Monat',
-  'KGM': 'Kilogramm',
-  'MTR': 'Meter',
-  'LTR': 'Liter',
-  'MTK': 'Quadratmeter',
-  'TNE': 'Tonne',
+  'EA':  'Einheit',
+  'H87': 'Stück',
+  'NAR': 'Anzahl Artikel',
+  'NPR': 'Anzahl Paare',
+  'P1':  'Prozent',
+  'PR':  'Paar',
   'SET': 'Set',
-  'EA': 'Einheit',
+  // Zeit
+  'ANN': 'Jahr',
+  'DAY': 'Tag',
+  'HUR': 'Stunde',
+  'MIN': 'Minute',
+  'MON': 'Monat',
+  'SEC': 'Sekunde',
+  'WEE': 'Woche',
+  // Masse
+  'GRM': 'Gramm',
+  'KGM': 'Kilogramm',
+  'TNE': 'Tonne',
+  // Länge
+  'CMT': 'Zentimeter',
+  'KTM': 'Kilometer',
+  'LMT': 'Laufmeter',
+  'MMT': 'Millimeter',
+  'MTR': 'Meter',
+  // Fläche
+  'CMK': 'Quadratzentimeter',
+  'MTK': 'Quadratmeter',
+  // Volumen
+  'LTR': 'Liter',
+  'MLT': 'Milliliter',
+  'MTQ': 'Kubikmeter',
+  // Energie
+  'KWH': 'Kilowattstunde',
+  'KWT': 'Kilowatt',
+  'MAW': 'Megawatt',
+  'MWH': 'Megawattstunde',
+  // Verpackung
+  'KT':  'Kit',
+  'XBX': 'Schachtel',
+  'XKI': 'Kit (Verpackung)',
+  'XPK': 'Paket',
+  'XPX': 'Palette',
+  // Sonstiges
+  'ACT': 'Aktivität',
+  'BQL': 'Becquerel',
+  'LS':  'Pauschale',
 };
 
 /** ISO 3166-1 alpha-2 — Länder */
