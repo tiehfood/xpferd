@@ -220,10 +220,12 @@
             </thead>
             <tbody>
               {#each preview.lines as line}
+                {@const unitKey = ('code.unit.' + line.unitCode)}
+                {@const unitLabel = t(unitKey as any)}
                 <tr>
                   <td class="mono">{line.lineNumber}</td>
                   <td>{line.itemName}{#if line.itemDescription}<br/><span class="line-desc">{line.itemDescription}</span>{/if}</td>
-                  <td class="text-right mono">{line.quantity} {line.unitCode}</td>
+                  <td class="text-right mono">{line.quantity} {unitLabel.startsWith('code.unit.') ? line.unitCode : unitLabel}</td>
                   <td class="text-right mono">{fmtCurrency(line.netPrice, preview.currencyCode ?? 'EUR', getSettings().numberFormat)}</td>
                   <td class="text-right mono">{fmtCurrency(line.lineNetAmount, preview.currencyCode ?? 'EUR', getSettings().numberFormat)}</td>
                 </tr>
