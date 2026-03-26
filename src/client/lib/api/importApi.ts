@@ -1,7 +1,12 @@
 const BASE = '/api/v1/invoices';
 
+export interface ImportPreviewResult {
+  invoice: any;
+  warnings: string[];
+}
+
 export const importApi = {
-  preview: async (xml: string) => {
+  preview: async (xml: string): Promise<ImportPreviewResult> => {
     const res = await fetch(`${BASE}/import/preview`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

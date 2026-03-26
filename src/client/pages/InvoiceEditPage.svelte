@@ -25,6 +25,7 @@
   let templateNameInput = $state('');
   let showTemplateSaveModal = $state(false);
   let selectedInvNumTemplateId = $state('');
+  let importWarnings: string[] = $state([]);
 
   function createEmpty(): any {
     return {
@@ -81,6 +82,17 @@
         // ignore malformed import data
       } finally {
         sessionStorage.removeItem('import-invoice');
+      }
+      // Read import warnings
+      const warningsData = sessionStorage.getItem('import-warnings');
+      if (warningsData) {
+        try {
+          importWarnings = JSON.parse(warningsData);
+        } catch {
+          // ignore
+        } finally {
+          sessionStorage.removeItem('import-warnings');
+        }
       }
     }
 
@@ -279,6 +291,28 @@
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
       {error}
+    </div>
+  {/if}
+
+  {#if importWarnings.length > 0}
+    <div class="import-warnings-banner">
+      <div class="import-warnings-header">
+        <div class="import-warnings-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Import: {importWarnings.length} {importWarnings.length === 1 ? 'Hinweis' : 'Hinweise'}
+        </div>
+        <button class="dismiss-btn" onclick={() => importWarnings = []} aria-label="Schließen">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <ul class="import-warnings-list">
+        {#each importWarnings as w}
+          <li>{w}</li>
+        {/each}
+      </ul>
     </div>
   {/if}
 
@@ -519,5 +553,74 @@
     .editor-header {
       flex-direction: column;
     }
+  }
+
+  .import-warnings-banner {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    animation: slideUp 0.2s var(--ease-out);
+  }
+
+  .import-warnings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+  }
+
+  .import-warnings-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #92400e;
+  }
+
+  .import-warnings-title svg {
+    color: #d97706;
+    flex-shrink: 0;
+  }
+
+  .dismiss-btn {
+    background: none;
+    border: none;
+    padding: 0.2rem;
+    color: #92400e;
+    cursor: pointer;
+    border-radius: var(--radius);
+    opacity: 0.6;
+    transition: opacity 0.15s;
+    outline: none;
+  }
+
+  .dismiss-btn:hover {
+    opacity: 1;
+  }
+
+  .import-warnings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .import-warnings-list li {
+    font-size: 0.75rem;
+    color: #92400e;
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .import-warnings-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0.35rem;
+    color: #d97706;
   }
 </style>

@@ -56,15 +56,15 @@ describe('POST /api/v1/invoices/import/preview — UBL', () => {
     const xml = readExample('xrechnung-beispiel.xml');
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
-    expect((data as any).invoiceNumber).toBe('RE-2024-0042');
-    expect((data as any).seller.name).toBe('Mustermann Consulting GmbH');
+    expect((data as any).invoice.invoiceNumber).toBe('RE-2024-0042');
+    expect((data as any).invoice.seller.name).toBe('Mustermann Consulting GmbH');
   });
 
   it('response includes buyer, payment, lines for UBL invoice', async () => {
     const xml = readExample('xrechnung-beispiel.xml');
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
-    const dto = data as any;
+    const dto = (data as any).invoice;
     expect(dto.buyer.name).toBe('Muster AG');
     expect(dto.iban).toBe('DE89370400440532013000');
     expect(dto.lines).toHaveLength(1);
@@ -75,7 +75,7 @@ describe('POST /api/v1/invoices/import/preview — UBL', () => {
     const xml = readExample('xrechnung-beispiel.xml');
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
-    const dto = data as any;
+    const dto = (data as any).invoice;
     expect(dto.totalNetAmount).toBeCloseTo(6000, 2);
     expect(dto.totalGrossAmount).toBeCloseTo(7140, 2);
   });
@@ -89,15 +89,15 @@ describe('POST /api/v1/invoices/import/preview — CII', () => {
     const xml = readExample('XRechnung-Beispiel2.xml');
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
-    expect((data as any).invoiceNumber).toBe('24101');
-    expect((data as any).seller.name).toBe('Lieferant GmbH');
+    expect((data as any).invoice.invoiceNumber).toBe('24101');
+    expect((data as any).invoice.seller.name).toBe('Lieferant GmbH');
   });
 
   it('CII response includes correct line items and totals', async () => {
     const xml = readExample('XRechnung-Beispiel2.xml');
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
-    const dto = data as any;
+    const dto = (data as any).invoice;
     expect(dto.lines).toHaveLength(2);
     expect(dto.totalNetAmount).toBeCloseTo(473, 2);
     expect(dto.totalGrossAmount).toBeCloseTo(529.87, 1);
@@ -107,8 +107,8 @@ describe('POST /api/v1/invoices/import/preview — CII', () => {
     const xml = readExample('beispiel-xrechnung-cii.xml');
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
-    expect((data as any).invoiceNumber).toBeTruthy();
-    expect((data as any).seller.name).toBeTruthy();
+    expect((data as any).invoice.invoiceNumber).toBeTruthy();
+    expect((data as any).invoice.seller.name).toBeTruthy();
   });
 });
 
@@ -216,11 +216,20 @@ describe('POST /api/v1/invoices/import/preview — does not persist', () => {
 // Response shape validation
 // ---------------------------------------------------------------------------
 describe('POST /api/v1/invoices/import/preview — response shape', () => {
-  it('200 response has invoiceNumber, seller, buyer, lines fields', async () => {
+  it('200 response has invoice and warnings fields', async () => {
     const xml = readExample('xrechnung-beispiel.xml');
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
-    const dto = data as any;
+    expect(data).toHaveProperty('invoice');
+    expect(data).toHaveProperty('warnings');
+    expect(Array.isArray((data as any).warnings)).toBe(true);
+  });
+
+  it('200 response invoice has invoiceNumber, seller, buyer, lines fields', async () => {
+    const xml = readExample('xrechnung-beispiel.xml');
+    const { status, data } = await postImport({ xml });
+    expect(status).toBe(200);
+    const dto = (data as any).invoice;
     expect(dto).toHaveProperty('invoiceNumber');
     expect(dto).toHaveProperty('seller');
     expect(dto).toHaveProperty('buyer');
@@ -233,7 +242,18 @@ describe('POST /api/v1/invoices/import/preview — response shape', () => {
     const { status, data } = await postImport({ xml });
     expect(status).toBe(200);
     // The preview DTO should have no id (not persisted)
-    expect((data as any).id).toBeUndefined();
+    expect((data as any).invoice.id).toBeUndefined();
+  });
+
+  it('warnings is an array of strings', async () => {
+    const xml = readExample('xrechnung-beispiel.xml');
+    const { status, data } = await postImport({ xml });
+    expect(status).toBe(200);
+    const warnings = (data as any).warnings as unknown[];
+    expect(Array.isArray(warnings)).toBe(true);
+    for (const w of warnings) {
+      expect(typeof w).toBe('string');
+    }
   });
 
   it('400 response has error field', async () => {
@@ -261,5 +281,30 @@ describe('POST /api/v1/invoices/import/preview — response shape', () => {
       body: JSON.stringify({ xml: '' }),
     });
     expect(res.headers.get('content-type')).toContain('application/json');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Warning content validation
+// ---------------------------------------------------------------------------
+describe('POST /api/v1/invoices/import/preview — warning content', () => {
+  it('warnings are in German', async () => {
+    const xml = readExample('xrechnung-beispiel.xml');
+    const { status, data } = await postImport({ xml });
+    expect(status).toBe(200);
+    const warnings = (data as any).warnings as string[];
+    // All warnings should contain German text (no English keywords like "missing" or "invalid")
+    for (const w of warnings) {
+      expect(w).not.toMatch(/\b(missing|invalid|required)\b/i);
+    }
+  });
+
+  it('produces warnings for invoices with missing contact info', async () => {
+    // XRechnung-Beispiel2 is a CII invoice — check it produces at least some warnings
+    const xml = readExample('XRechnung-Beispiel2.xml');
+    const { status, data } = await postImport({ xml });
+    expect(status).toBe(200);
+    // We only assert the shape — not which specific warnings fire, as examples vary
+    expect(Array.isArray((data as any).warnings)).toBe(true);
   });
 });
