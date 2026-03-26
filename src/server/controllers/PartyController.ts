@@ -30,7 +30,7 @@ export class PartyController {
       res.status(201).json(party);
     } catch (err) {
       if (err instanceof ZodError) {
-        res.status(400).json({ error: 'Validation failed', details: err.errors });
+        res.status(400).json({ error: 'Validation failed', details: err.issues });
         return;
       }
       throw err;
@@ -49,7 +49,7 @@ export class PartyController {
       res.json(party);
     } catch (err) {
       if (err instanceof ZodError) {
-        res.status(400).json({ error: 'Validation failed', details: err.errors });
+        res.status(400).json({ error: 'Validation failed', details: err.issues });
         return;
       }
       throw err;

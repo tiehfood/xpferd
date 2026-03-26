@@ -19,7 +19,7 @@ export class AppSettingsController {
       res.json(settings);
     } catch (err) {
       if (err instanceof ZodError) {
-        res.status(400).json({ error: 'Validation failed', details: err.errors });
+        res.status(400).json({ error: 'Validation failed', details: err.issues });
         return;
       }
       throw err;

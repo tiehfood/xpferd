@@ -27,7 +27,7 @@ export class InvoiceTemplateController {
       res.status(201).json(this.service.create(data as InvoiceTemplateDto));
     } catch (err) {
       if (err instanceof ZodError) {
-        res.status(400).json({ error: 'Validation failed', details: err.errors });
+        res.status(400).json({ error: 'Validation failed', details: err.issues });
         return;
       }
       throw err;
@@ -46,7 +46,7 @@ export class InvoiceTemplateController {
       res.json(item);
     } catch (err) {
       if (err instanceof ZodError) {
-        res.status(400).json({ error: 'Validation failed', details: err.errors });
+        res.status(400).json({ error: 'Validation failed', details: err.issues });
         return;
       }
       throw err;
