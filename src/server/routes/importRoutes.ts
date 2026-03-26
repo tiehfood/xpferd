@@ -21,7 +21,7 @@ const controller = new ImportController();
  *             properties:
  *               xml:
  *                 type: string
- *                 description: Raw XRechnung or ZUGFeRD/UBL XML content
+ *                 description: Raw XRechnung XML content (UBL 2.1 or CII format)
  *     responses:
  *       200:
  *         description: Parsed invoice preview with warnings (not saved to DB)

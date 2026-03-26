@@ -122,7 +122,7 @@
         <span class="file-name">{fileName}</span>
       {:else}
         <span class="drop-text">XML-Datei hierher ziehen oder klicken</span>
-        <span class="drop-hint">.xml (XRechnung, ZUGFeRD, UBL)</span>
+        <span class="drop-hint">.xml (XRechnung / UBL / CII)</span>
       {/if}
     </div>
 
