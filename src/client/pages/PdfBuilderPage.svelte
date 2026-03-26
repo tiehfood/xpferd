@@ -1614,7 +1614,7 @@
                           {/each}
                         </div>
                       {/if}
-                      {#each previewInvoice.lines.slice(0, 4) as line, rowIdx}
+                      {#each previewInvoice.lines as line, rowIdx}
                         {@const cellMap: Record<string,string> = { pos: String(line.lineNumber), name: line.itemName, qty: formatNumber(line.quantity), unit: getUnitLabel(line.unitCode), price: formatCurrency(line.netPrice), total: formatCurrency(line.lineNetAmount) }}
                         {@const hdrHex = block.tableHeaderBgColor ?? '#f0f0eb'}
                         {@const modernStripe = tStyle === 'modern' && rowIdx % 2 === 1}
@@ -1631,7 +1631,7 @@
                           {/each}
                         </div>
                       {/each}
-                      {#if previewInvoice.lines.length > 4}<div class="preview-muted" style="padding: 2px 4px;">…{previewInvoice.lines.length - 4} {t('pdf_builder.weitere')}</div>{/if}
+
                     </div>
                   {:else if block.type === 'total-net'}
                     <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{previewInvoice.kleinunternehmer ? 'Rechnungssumme:' : 'Nettobetrag:'}</span><span>{formatCurrency(previewInvoice.totalNetAmount ?? 0)}</span></div>
