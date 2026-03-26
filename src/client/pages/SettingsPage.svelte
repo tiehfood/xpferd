@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { t } from '../lib/i18n.js';
+  import { t, translations } from '../lib/i18n.js';
   import { loadSettings, saveSettings } from '../lib/settingsStore.svelte.js';
   import type { AppSettingsDto } from '$shared/types';
+  import type { Locale } from '../lib/i18n.js';
 
   let form = $state<AppSettingsDto>({
     locale: 'de-DE',
@@ -33,6 +34,14 @@
     { value: 'de-DE', label: `1.000,00 (${t('settings.deutsch')})` },
     { value: 'en-US', label: `1,000.00 (${t('settings.englisch')})` },
   ];
+
+  // Automatically derived from available translations – no manual update needed
+  const LOCALE_OPTIONS: { value: Locale; label: string }[] = (
+    Object.keys(translations) as Locale[]
+  ).map((loc) => ({
+    value: loc,
+    label: translations[loc]['settings.locale.name'] ?? loc,
+  }));
 
   onMount(async () => {
     try {
@@ -78,8 +87,9 @@
           </div>
           <div class="settings-control">
             <select bind:value={form.locale} class="settings-select">
-              <option value="de-DE">{t('settings.deutsch')}</option>
-              <option value="en-US">{t('settings.englisch')}</option>
+              {#each LOCALE_OPTIONS as opt}
+                <option value={opt.value}>{opt.label}</option>
+              {/each}
             </select>
           </div>
         </div>
