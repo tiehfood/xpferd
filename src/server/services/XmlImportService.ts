@@ -340,9 +340,9 @@ export class XmlImportService {
         countryCode: text(sellerCountry?.['cbc:IdentificationCode']) || 'DE',
         vatId: sellerVatId,
         taxNumber: sellerTaxNumber,
-        contactName: orUndef(text(sellerContact?.['cbc:Name'])),
-        contactPhone: orUndef(text(sellerContact?.['cbc:Telephone'])),
-        contactEmail: orUndef(text(sellerContact?.['cbc:ElectronicMail'])),
+        contactName: text(sellerContact?.['cbc:Name']) || '',
+        contactPhone: text(sellerContact?.['cbc:Telephone']) || '',
+        contactEmail: text(sellerContact?.['cbc:ElectronicMail']) || '',
       },
 
       buyer: {
@@ -352,7 +352,7 @@ export class XmlImportService {
         postalCode: text(buyerAddress?.['cbc:PostalZone']) || '',
         countryCode: text(buyerCountry?.['cbc:IdentificationCode']) || 'DE',
         vatId: buyerVatId,
-        email: buyerEmail,
+        email: buyerEmail ?? '',
       },
 
       paymentMeansCode,
@@ -595,9 +595,9 @@ export class XmlImportService {
         countryCode: text(sellerAddress?.['ram:CountryID']) || 'DE',
         vatId: sellerVatId,
         taxNumber: sellerTaxNumber,
-        contactName: orUndef(text(sellerContact?.['ram:PersonName'])),
-        contactPhone: orUndef(text(sellerPhone?.['ram:CompleteNumber'])),
-        contactEmail: orUndef(text(sellerEmailComm?.['ram:URIID'])),
+        contactName: text(sellerContact?.['ram:PersonName']) || '',
+        contactPhone: text(sellerPhone?.['ram:CompleteNumber']) || '',
+        contactEmail: text(sellerEmailComm?.['ram:URIID']) || '',
       },
 
       buyer: {
@@ -607,7 +607,7 @@ export class XmlImportService {
         postalCode: text(buyerAddress?.['ram:PostcodeCode']) || '',
         countryCode: text(buyerAddress?.['ram:CountryID']) || 'DE',
         vatId: buyerVatId,
-        email: buyerEmail,
+        email: buyerEmail ?? '',
       },
 
       paymentMeansCode,

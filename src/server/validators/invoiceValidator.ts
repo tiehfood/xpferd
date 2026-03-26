@@ -1,39 +1,38 @@
 import { z } from 'zod';
-import validator from 'validator';
 
 const sellerSchema = z.object({
   name: z.string().min(1),
-  street: z.string().min(1),
-  city: z.string().min(1),
-  postalCode: z.string().min(1),
+  street: z.string(),
+  city: z.string(),
+  postalCode: z.string(),
   countryCode: z.string().length(2),
   vatId: z.string().optional(),
   taxNumber: z.string().optional(),
-  contactName: z.string().min(1, 'Pflichtfeld für XRechnung (BR-DE-2)'),
-  contactPhone: z.string().min(1, 'Pflichtfeld für XRechnung (BR-DE-2)'),
-  contactEmail: z.string().email('Ungültige E-Mail-Adresse').min(1, 'Pflichtfeld für XRechnung (PEPPOL-R020)'),
+  contactName: z.string(),
+  contactPhone: z.string(),
+  contactEmail: z.string(),
 });
 
 const buyerSchema = z.object({
   name: z.string().min(1),
-  street: z.string().min(1),
-  city: z.string().min(1),
-  postalCode: z.string().min(1),
+  street: z.string(),
+  city: z.string(),
+  postalCode: z.string(),
   countryCode: z.string().length(2),
   vatId: z.string().optional(),
-  email: z.string().email('Ungültige E-Mail-Adresse').min(1, 'Pflichtfeld für XRechnung (PEPPOL-R010)'),
+  email: z.string(),
 });
 
 const invoiceLineSchema = z.object({
   lineNumber: z.number().int().positive(),
-  quantity: z.number().positive(),
+  quantity: z.number(),
   unitCode: z.string().min(1),
   itemName: z.string().min(1),
   itemDescription: z.string().optional(),
-  netPrice: z.number().min(0),
+  netPrice: z.number(),
   vatCategoryCode: z.string().min(1),
   vatRate: z.number().min(0),
-  lineNetAmount: z.number().min(0),
+  lineNetAmount: z.number(),
 });
 
 export const invoiceSchema = z.object({
@@ -54,11 +53,15 @@ export const invoiceSchema = z.object({
   paymentMeansCode: z.string().min(1),
   paymentTerms: z.string().optional(),
   iban: z.string().optional().or(z.literal('')).refine(
-    (val) => !val || validator.isIBAN(val.replace(/\s/g, '')),
+    (val) => !val || val.replace(/\s/g, '').length >= 15,
     { message: 'Ungültige IBAN' },
   ),
   bic: z.string().optional().or(z.literal('')).refine(
-    (val) => !val || validator.isBIC(val),
+    (val) => {
+      if (!val) return true;
+      const len = val.length;
+      return len >= 8 && len <= 11;
+    },
     { message: 'Ungültiger BIC' },
   ),
   paymentReference: z.string().optional(),
