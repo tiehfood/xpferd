@@ -131,13 +131,6 @@
               <td class="col-nr mono">{line.lineNumber}</td>
               <td class="col-name">
                 <input bind:value={line.itemName} placeholder={t('lines.artikelbezeichnung_placeholder')} />
-                {#if line.itemDescription !== undefined && line.itemDescription !== ''}
-                  <textarea class="item-desc" rows="2" bind:value={line.itemDescription} placeholder={t('lines.beschreibung_placeholder')}></textarea>
-                {:else}
-                  <button class="add-desc-btn" type="button" onclick={() => { line.itemDescription = ''; }}>
-                    + {t('lines.beschreibung')}
-                  </button>
-                {/if}
               </td>
               <td class="col-qty">
                 <input type="number" step="0.01" min="0" bind:value={line.quantity} oninput={handleInput} />
@@ -183,6 +176,18 @@
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                   </svg>
                 </button>
+              </td>
+            </tr>
+            <tr class="desc-row">
+              <td></td>
+              <td colspan={kleinunternehmer ? 6 : 8}>
+                {#if line.itemDescription != null}
+                  <textarea class="item-desc" rows="2" bind:value={line.itemDescription} placeholder={t('lines.beschreibung_placeholder')}></textarea>
+                {:else}
+                  <button class="add-desc-btn" type="button" onclick={() => { line.itemDescription = ''; }}>
+                    + {t('lines.beschreibung')}
+                  </button>
+                {/if}
               </td>
             </tr>
           {/each}
@@ -235,16 +240,26 @@
   }
 
   table input, table select {
-    height: auto;            /* override global --ctrl-h for compact table cells */
     font-size: 0.8125rem;
-    padding: 0.4rem 0.5rem;
     border-radius: var(--radius);
+  }
+
+  /* Selects need right padding for the dropdown arrow (global sets 2rem) */
+  table select {
+    padding-right: 2rem;
   }
 
   .required {
     color: var(--danger);
     font-weight: 700;
     text-transform: none;
+  }
+
+  th { white-space: nowrap; }
+
+  /* Main data row: no bottom border — the desc-row below provides the divider */
+  tbody tr:not(.desc-row) td {
+    border-bottom: none;
   }
 
   .col-nr { width: 40px; color: var(--text-muted); }
@@ -289,9 +304,13 @@
     font-variant-numeric: tabular-nums;
   }
 
+  .desc-row td {
+    padding-top: 0;
+    padding-bottom: 0.5rem;
+  }
+
   .item-desc {
     width: 100%;
-    margin-top: 0.35rem;
     font-size: 0.75rem;
     padding: 0.35rem 0.5rem;
     resize: vertical;
@@ -301,7 +320,6 @@
 
   .add-desc-btn {
     display: inline-block;
-    margin-top: 0.25rem;
     padding: 0;
     border: none;
     background: none;
