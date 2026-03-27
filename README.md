@@ -51,7 +51,7 @@ About the name: The "X" was taken from XRechnung obviously and part of ZUGFeRD i
 
 
 ## Docker image
-**Latest:** [tiehfood/xpferd:latest](https://hub.docker.com/repository/docker/tiehfood/xpferd/tags/latest/)  
+**Latest:** [tiehfood/xpferd:latest](https://hub.docker.com/r/tiehfood/xpferd/tags?name=latest)  
 *(or specific tag from release page, just the number without the leading `v`)*
 
 ## Quick Start
