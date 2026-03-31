@@ -9,6 +9,8 @@
   import InvoiceTemplateEditPage from './pages/InvoiceTemplateEditPage.svelte';
   import SettingsPage from './pages/SettingsPage.svelte';
   import ImportPage from './pages/ImportPage.svelte';
+  import RecurringInvoicesPage from './pages/RecurringInvoicesPage.svelte';
+  import AuditLogPage from './pages/AuditLogPage.svelte';
   import { loadSettings } from './lib/settingsStore.svelte.js';
 
   // Load settings on app startup so they're available everywhere
@@ -19,6 +21,7 @@
     '/invoices/new': InvoiceEditPage,
     '/invoices/:id': InvoiceEditPage,
     '/import': ImportPage,
+    '/recurring': RecurringInvoicesPage,
     '/sellers': PartiesPage,
     '/buyers': PartiesPage,
     '/templates': TemplatesPage,
@@ -29,6 +32,7 @@
     '/templates/invoices': TemplatesPage,
     '/pdf-templates': PdfBuilderPage,
     '/pdf-templates/*': PdfBuilderPage,
+    '/audit-log': AuditLogPage,
     '/settings': SettingsPage,
   };
 </script>

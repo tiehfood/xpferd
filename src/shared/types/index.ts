@@ -13,4 +13,6 @@ export type {
   PdfTemplateDto,
   GuideLineDto,
   AppSettingsDto,
+  RecurringInvoiceDto,
+  RecurringInvoiceLogDto,
 } from './Invoice.js';

@@ -181,9 +181,6 @@
     flex-shrink: 0;
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
 
   .editor-header {
     display: flex;
