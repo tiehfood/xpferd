@@ -89,7 +89,7 @@
     </label>
     {#if invoice.kleinunternehmer}
       <div class="kleinunternehmer-notice">
-        <span class="badge">§19 UStG</span>
+        <span class="header-badge">§19 UStG</span>
         {t('code.kleinunternehmer_note')}
       </div>
     {/if}
@@ -289,7 +289,7 @@
     font-weight: 700;
   }
 
-  .badge {
+  .header-badge {
     display: inline-flex;
     align-items: center;
     padding: 0.15rem 0.5rem;

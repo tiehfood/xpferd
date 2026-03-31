@@ -187,6 +187,39 @@ export class Database {
         number_format TEXT NOT NULL DEFAULT 'de-DE',
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
       );
+
+      CREATE TABLE IF NOT EXISTS recurring_invoices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        invoice_template_id INTEGER NOT NULL,
+        invoice_number_template_id INTEGER,
+        frequency TEXT NOT NULL CHECK(frequency IN ('weekly','biweekly','monthly','quarterly')),
+        day_of_week INTEGER,
+        day_of_month INTEGER,
+        month_position TEXT,
+        start_date TEXT NOT NULL,
+        end_date TEXT,
+        due_date_offset_days INTEGER NOT NULL DEFAULT 30,
+        delivery_date_offset_days INTEGER NOT NULL DEFAULT 0,
+        active INTEGER NOT NULL DEFAULT 1,
+        last_generated_date TEXT,
+        next_scheduled_date TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (invoice_template_id) REFERENCES invoice_templates(id)
+      );
+
+      CREATE TABLE IF NOT EXISTS recurring_invoice_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        recurring_invoice_id INTEGER NOT NULL,
+        invoice_id INTEGER,
+        scheduled_date TEXT NOT NULL,
+        generated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        status TEXT NOT NULL CHECK(status IN ('success','error')),
+        error_message TEXT,
+        FOREIGN KEY (recurring_invoice_id) REFERENCES recurring_invoices(id) ON DELETE CASCADE,
+        FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE SET NULL
+      );
     `);
 
     // Column migrations — ALTER TABLE IF NOT EXISTS is not supported by SQLite,
@@ -215,5 +248,6 @@ export class Database {
     addColumnIfMissing('invoices', 'account_name', 'TEXT');
     addColumnIfMissing('invoices', 'prepaid_amount', 'REAL DEFAULT 0');
     addColumnIfMissing('invoice_lines', 'item_description', 'TEXT');
+    addColumnIfMissing('invoices', 'auto_generated', 'INTEGER NOT NULL DEFAULT 0');
   }
 }

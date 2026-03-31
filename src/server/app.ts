@@ -11,6 +11,7 @@ import templateRoutes from './routes/templateRoutes.js';
 import pdfTemplateRoutes from './routes/pdfTemplateRoutes.js';
 import appSettingsRoutes from './routes/appSettingsRoutes.js';
 import importRoutes from './routes/importRoutes.js';
+import recurringInvoiceRoutes from './routes/recurringInvoiceRoutes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -43,6 +44,7 @@ export function createApp(): express.Application {
   app.use('/api/v1/templates', templateRoutes);
   app.use('/api/v1/pdf-templates', pdfTemplateRoutes);
   app.use('/api/v1/settings', appSettingsRoutes);
+  app.use('/api/v1/recurring-invoices', recurringInvoiceRoutes);
 
   // API 404 handler — return JSON, not HTML, for unmatched API routes
   app.use('/api', (_req, res) => {

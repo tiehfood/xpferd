@@ -2229,10 +2229,6 @@
     animation: spin 0.8s linear infinite;
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
   .empty-state {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -2375,10 +2371,6 @@
     border-top-color: transparent;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
   }
 
   .template-actions {
