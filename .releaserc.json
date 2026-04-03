@@ -85,7 +85,7 @@
       "@semantic-release/exec",
       {
         "analyzeCommitsCmd": "echo \"VERSION_NUMBER=${lastRelease.version}\" > release.env; echo \"CI_CREATE_IMAGE=false\" >> release.env",
-        "generateNotesCmd": "printf '\\n\\n---\\n\\n## 🐳 Docker Image\\n\\n| Version | Pull command | Architectures |\\n|---------|-------------|----------------|\\n| [`${nextRelease.version}`](https://hub.docker.com/r/%s/xpferd/tags?name=${nextRelease.version}/) | `docker pull %s/xpferd:${nextRelease.version}` | `linux/amd64`, `linux/arm64` |\\n' \"$DOCKERHUB_USERNAME\" \"$DOCKERHUB_USERNAME\"; echo \"VERSION_NUMBER=${nextRelease.version}\" > release.env; echo \"CI_CREATE_IMAGE=true\" >> release.env"
+        "generateNotesCmd": "printf '\\n\\n---\\n\\n## 🐳 Docker Image\\n\\n| Version | Pull command | Architectures |\\n|---------|-------------|----------------|\\n| [`${nextRelease.version}`](https://hub.docker.com/r/%s/xpferd/tags?name=${nextRelease.version}) | `docker pull %s/xpferd:${nextRelease.version}` | `linux/amd64`, `linux/arm64` |\\n' \"$DOCKERHUB_USERNAME\" \"$DOCKERHUB_USERNAME\"; echo \"VERSION_NUMBER=${nextRelease.version}\" > release.env; echo \"CI_CREATE_IMAGE=true\" >> release.env"
       }
     ]
   ]
