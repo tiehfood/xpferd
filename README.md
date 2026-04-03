@@ -43,12 +43,13 @@ About the name: The "X" was taken from XRechnung obviously and part of ZUGFeRD i
 - Swagger API documentation at `/api-docs`
 - Support for Germany and English language
 - Import existing XML invoices (XRechnung & UBL)
+- Create recurring invoices automatically with custom intervals
 
 ## Screenshots
 | ![Screenshot01](docs/screenshots/screen1.png) | ![Screenshot02](docs/screenshots/screen2.png) |
 |:---------------------------------------------:|:---------------------------------------------:|
 | ![Screenshot03](docs/screenshots/screen3.png) | ![Screenshot04](docs/screenshots/screen4.png) |
-
+| ![Screenshot05](docs/screenshots/screen5.png) | ![Screenshot06](docs/screenshots/screen6.png) |
 
 ## Docker image
 **Latest:** [tiehfood/xpferd:latest](https://hub.docker.com/r/tiehfood/xpferd/tags?name=latest)  
