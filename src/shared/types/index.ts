@@ -15,4 +15,8 @@ export type {
   AppSettingsDto,
   RecurringInvoiceDto,
   RecurringInvoiceLogDto,
+  EmailSettingsDto,
+  EmailTemplateDto,
+  EmailLogDto,
+  SendEmailRequest,
 } from './Invoice.js';

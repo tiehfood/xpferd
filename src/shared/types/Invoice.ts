@@ -240,6 +240,12 @@ export interface RecurringInvoiceDto {
   lastGeneratedDate?: string;
   nextScheduledDate?: string;
 
+  // Email auto-send (optional)
+  autoSendEmail?: boolean;
+  emailTemplateId?: number;
+  emailAttachmentType?: 'zugferd' | 'xml' | 'zugferd+xml';
+  pdfTemplateId?: number;
+
   createdAt?: string;
   updatedAt?: string;
 }
@@ -253,4 +259,49 @@ export interface RecurringInvoiceLogDto {
   generatedAt: string;
   status: 'success' | 'error';
   errorMessage?: string;
+}
+
+export interface EmailSettingsDto {
+  smtpHost: string;
+  smtpPort: number;
+  smtpSecure: boolean;
+  smtpUser: string;
+  smtpPass: string;          // plaintext in DTO, encrypted in DB
+  fromAddress: string;
+  fromName?: string;
+  replyTo?: string;
+}
+
+export interface EmailTemplateDto {
+  id?: number;
+  name: string;
+  subject: string;           // supports placeholders: {rechnungsnummer}, {empfänger}, etc.
+  body: string;              // multiline with placeholders
+  bodyHtml?: string;         // optional HTML body — if set, sent as multipart/alternative
+  isDefault: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EmailLogDto {
+  id?: number;
+  invoiceId: number;
+  invoiceNumber?: string;
+  recipientEmail: string;
+  subject: string;
+  attachmentType: 'zugferd' | 'xml' | 'zugferd+xml';
+  pdfTemplateId?: number;
+  pdfTemplateName?: string;
+  sentAt: string;
+  status: 'success' | 'error';
+  errorMessage?: string;
+}
+
+export interface SendEmailRequest {
+  recipientEmail: string;
+  templateId: number;
+  attachmentType: 'zugferd' | 'xml' | 'zugferd+xml';
+  pdfTemplateId?: number;    // required when attachmentType includes 'zugferd'
+  cc?: string;
+  bcc?: string;
 }

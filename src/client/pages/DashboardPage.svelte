@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { push } from 'svelte-spa-router';
   import AppBadge from '../lib/components/AppBadge.svelte';
+  import SendEmailDialog from '../lib/components/SendEmailDialog.svelte';
   import { invoiceApi } from '../lib/api/invoiceApi';
   import { fmtCurrency, fmtDate as formatDateStr } from '../../shared/constants/format';
   import { getSettings } from '../lib/settingsStore.svelte.js';
@@ -50,6 +51,12 @@
 
   function fmtDate(d: string): string {
     return formatDateStr(d, getSettings().dateFormat);
+  }
+
+  let sendDialogInvoiceId = $state<number | null>(null);
+
+  function openSendDialog(invoiceId: number) {
+    sendDialogInvoiceId = invoiceId;
   }
 </script>
 
@@ -132,6 +139,7 @@
                   {t('dashboard.bearbeiten')}
                 </button>
                 <button class="ghost" onclick={() => handleExport(inv.id)}>{t('dashboard.xml')}</button>
+                <button class="ghost" onclick={() => openSendDialog(inv.id)}>{t('email.email')}</button>
                 <button class="ghost" onclick={() => handleDuplicate(inv.id)}>{t('dashboard.kopieren')}</button>
                 <button class="danger" onclick={() => handleDelete(inv.id)}>{t('dashboard.loeschen')}</button>
               </div>
@@ -141,6 +149,14 @@
       </tbody>
     </table>
   </div>
+{/if}
+
+{#if sendDialogInvoiceId != null}
+  <SendEmailDialog
+    invoiceId={sendDialogInvoiceId}
+    onClose={() => { sendDialogInvoiceId = null; }}
+    onSent={() => { sendDialogInvoiceId = null; }}
+  />
 {/if}
 
 <style>

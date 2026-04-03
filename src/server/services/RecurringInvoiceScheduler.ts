@@ -24,15 +24,14 @@ export class RecurringInvoiceScheduler {
   }
 
   private runCheck(): void {
-    try {
-      const result = this.service.generateDueInvoices();
+    this.service.generateDueInvoices().then((result) => {
       if (result.generated > 0 || result.errors > 0) {
         console.log(
           `[RecurringInvoiceScheduler] Generated ${result.generated} invoice(s), ${result.errors} error(s)`,
         );
       }
-    } catch (err) {
+    }).catch((err) => {
       console.error('[RecurringInvoiceScheduler] Error during check:', err);
-    }
+    });
   }
 }

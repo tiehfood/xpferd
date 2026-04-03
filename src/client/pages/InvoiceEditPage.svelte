@@ -13,6 +13,7 @@
   import LinesSection from '../lib/components/LinesSection.svelte';
   import TotalsSection from '../lib/components/TotalsSection.svelte';
   import FormSelect from '../lib/components/FormSelect.svelte';
+  import SendEmailDialog from '../lib/components/SendEmailDialog.svelte';
 
   let { params = {} }: { params?: { id?: string } } = $props();
 
@@ -20,6 +21,7 @@
   let saving = $state(false);
   let error = $state('');
   let isNew = $derived(!params.id);
+  let showSendDialog = $state(false);
 
   let invoice: any = $state(createEmpty());
   let invoiceTemplates: any[] = $state([]);
@@ -29,6 +31,8 @@
   let selectedInvNumTemplateId = $state('');
   let selectedTemplateId = $state('');
   let liveWarnings = $derived(checkInvoiceWarnings(invoice));
+  let warningsExpanded = $state(false);
+  let warningsCollapsible = $derived(liveWarnings.length > 3);
 
   function createEmpty(): any {
     return {
@@ -263,6 +267,12 @@
           </svg>
           {t('invoice_edit.xml_export')}
         </button>
+        <button class="ghost" onclick={() => { showSendDialog = true; }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          {t('email.email')}
+        </button>
       {/if}
       <button class="primary save-btn" onclick={handleSave} disabled={saving}>
         {#if saving}
@@ -279,30 +289,49 @@
   </div>
 
   {#if error}
-    <div class="error-banner">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      {error}
+    {@const errorLines = error.split('\n')}
+    <div class="error-banner" class:error-banner-list={errorLines.length > 1}>
+      <div class="error-banner-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {errorLines[0]}
+      </div>
+      {#if errorLines.length > 1}
+        <ul class="error-fields">
+          {#each errorLines.slice(1) as line}
+            <li>{line}</li>
+          {/each}
+        </ul>
+      {/if}
     </div>
   {/if}
 
   {#if liveWarnings.length > 0}
     <div class="warnings-banner">
-      <div class="warnings-banner-header">
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="warnings-banner-header" class:clickable={warningsCollapsible} onclick={() => { if (warningsCollapsible) warningsExpanded = !warningsExpanded; }}>
         <div class="warnings-banner-title">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
-          {liveWarnings.length} {liveWarnings.length === 1 ? 'Hinweis' : 'Hinweise'}
+          {liveWarnings.length} {liveWarnings.length === 1 ? t('invoice_edit.hinweis') : t('invoice_edit.hinweise')}
+          {#if warningsCollapsible}
+            <svg class="warnings-chevron" class:expanded={warningsExpanded} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          {/if}
         </div>
       </div>
-      <ul class="warnings-banner-list">
-        {#each liveWarnings as w}
-          <li>{w.message}</li>
-        {/each}
-      </ul>
+      {#if !warningsCollapsible || warningsExpanded}
+        <ul class="warnings-banner-list">
+          {#each liveWarnings as w}
+            <li>{w.message}</li>
+          {/each}
+        </ul>
+      {/if}
     </div>
   {/if}
 
@@ -343,6 +372,15 @@
       </div>
     </div>
   </div>
+{/if}
+
+{#if showSendDialog && !isNew && invoice.id}
+  <SendEmailDialog
+    invoiceId={invoice.id}
+    buyerEmail={invoice.buyer?.email ?? ''}
+    onClose={() => { showSendDialog = false; }}
+    onSent={() => { showSendDialog = false; }}
+  />
 {/if}
 
 <style>
@@ -543,6 +581,43 @@
     }
   }
 
+  .error-banner-list {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .error-banner-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .error-fields {
+    list-style: none;
+    padding: 0;
+    margin: 0.35rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .error-fields li {
+    font-size: 0.75rem;
+    color: var(--danger);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .error-fields li::before {
+    content: '•';
+    position: absolute;
+    left: 0.35rem;
+    color: var(--danger);
+  }
+
   .warnings-banner {
     background: #fffbeb;
     border: 1px solid #fde68a;
@@ -556,7 +631,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.35rem;
+  }
+
+  .warnings-banner-header.clickable {
+    cursor: pointer;
   }
 
   .warnings-banner-title {
@@ -576,7 +654,7 @@
   .warnings-banner-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0.35rem 0 0;
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
@@ -594,5 +672,15 @@
     position: absolute;
     left: 0.35rem;
     color: #d97706;
+  }
+
+  .warnings-chevron {
+    transition: transform 0.2s var(--ease-out);
+    color: #d97706;
+    flex-shrink: 0;
+  }
+
+  .warnings-chevron.expanded {
+    transform: rotate(180deg);
   }
 </style>

@@ -1,4 +1,10 @@
 const deDe = {
+  // ── Common ───────────────────────────────────────────────────────────────
+  'common.speichern': 'Speichern',
+  'common.speichern_laufend': 'Speichern...',
+  'common.abbrechen': 'Abbrechen',
+  'common.schliessen': 'Schließen',
+
   // ── Settings ─────────────────────────────────────────────────────────────
   'settings.title': 'Einstellungen',
   'settings.subtitle': 'Allgemeine Anwendungseinstellungen',
@@ -278,6 +284,11 @@ const deDe = {
   'invoice_edit.schliessen': 'Schließen',
   'invoice_edit.verkaeufer': 'Verkäufer',
   'invoice_edit.kaeufer': 'Käufer',
+  'invoice_edit.hinweis': 'Hinweis',
+  'invoice_edit.hinweise': 'Hinweise',
+  'invoice_edit.hinweise_weniger': 'Weniger anzeigen',
+  'invoice_edit.hinweise_weitere': 'weitere Hinweise anzeigen',
+  'invoice_edit.hinweise_anzeigen': 'Hinweise anzeigen',
 
   // ── InvoiceTemplateEditPage ───────────────────────────────────────────────
   'invoice_tpl_edit.laden': 'Vorlage wird geladen...',
@@ -621,6 +632,8 @@ const deDe = {
 
   // ── Audit Log ────────────────────────────────────────────────────────────
   'auditlog.title': 'Protokoll',
+  'auditlog.tab_recurring': 'Wiederkehrende',
+  'auditlog.tab_email': 'E-Mail-Versand',
   'auditlog.subtitle': 'Verlauf der automatischen Rechnungserstellung',
   'auditlog.keine_eintraege': 'Noch keine Protokolleinträge vorhanden',
   'auditlog.datum': 'Zeitpunkt',
@@ -634,6 +647,105 @@ const deDe = {
   'auditlog.mehr_laden': 'Weitere laden',
   'auditlog.alle_geladen': 'Alle Einträge geladen',
   'sidebar.protokoll': 'Protokoll',
+  'sidebar.email_vorlagen': 'E-Mail-Vorlagen',
+
+  // ── E-Mail ───────────────────────────────────────────────────────────────
+  'email.email': 'E-Mail',
+
+  // Settings page (SMTP configuration)
+  'email.smtp_titel': 'E-Mail (SMTP)',
+  'email.smtp_beschreibung': 'SMTP-Server für den Rechnungsversand konfigurieren',
+  'email.smtp_host': 'SMTP-Host',
+  'email.smtp_port': 'Port',
+  'email.smtp_secure': 'TLS/SSL',
+  'email.smtp_secure_hint': 'Aktivieren für Port 465 (SSL), deaktivieren für Port 587 (STARTTLS)',
+  'email.smtp_user': 'Benutzername',
+  'email.smtp_pass': 'Passwort',
+  'email.smtp_from_address': 'Absender-Adresse',
+  'email.smtp_from_name': 'Absender-Name',
+  'email.smtp_reply_to': 'Antwort-an',
+  'email.verbindung_testen': 'Verbindung testen',
+  'email.verbindung_erfolgreich': 'Verbindung erfolgreich',
+  'email.verbindung_fehlgeschlagen': 'Verbindung fehlgeschlagen',
+  'email.smtp_nicht_konfiguriert': 'SMTP nicht konfiguriert',
+
+  // Email templates
+  'email.vorlagen_titel': 'E-Mail-Vorlagen',
+  'email.vorlagen_subtitle_singular': 'Vorlage',
+  'email.vorlagen_subtitle_plural': 'Vorlagen',
+  'email.vorlage_erstellen': 'Vorlage erstellen',
+  'email.vorlage_bearbeiten': 'Vorlage bearbeiten',
+  'email.vorlage_name': 'Vorlagenname',
+  'email.betreff': 'Betreff',
+  'email.text': 'E-Mail-Text',
+  'email.body_typ': 'Inhaltstyp',
+  'email.body_text': 'Nur Text',
+  'email.body_html': 'HTML',
+  'email.body_html_hinweis': 'HTML-Inhalt wird als Multipart-E-Mail versendet (Text als Fallback)',
+  'email.standard_vorlage': 'Standardvorlage',
+  'email.platzhalter': 'Verfügbare Platzhalter',
+  'email.platzhalter_rechnungsnummer': 'Rechnungsnummer',
+  'email.platzhalter_rechnungsdatum': 'Rechnungsdatum',
+  'email.platzhalter_faelligkeitsdatum': 'Fälligkeitsdatum',
+  'email.platzhalter_betrag_brutto': 'Bruttobetrag',
+  'email.platzhalter_betrag_netto': 'Nettobetrag',
+  'email.platzhalter_waehrung': 'Währung',
+  'email.platzhalter_empfaenger': 'Empfänger (Firma)',
+  'email.platzhalter_verkaeufer': 'Verkäufer (Firma)',
+  'email.platzhalter_iban': 'IBAN',
+  'email.platzhalter_verwendungszweck': 'Verwendungszweck',
+  'email.vorlage_loeschen_bestaetigen': 'Vorlage wirklich löschen?',
+
+  // Rich text editor toolbar
+  'rte.fett': 'Fett',
+  'rte.kursiv': 'Kursiv',
+  'rte.durchgestrichen': 'Durchgestrichen',
+  'rte.ueberschrift': 'Überschrift',
+  'rte.aufzaehlung': 'Aufzählung',
+  'rte.nummerierung': 'Nummerierung',
+  'rte.link': 'Link einfügen',
+  'rte.bild': 'Bild einfügen',
+  'rte.formatierung_loeschen': 'Formatierung entfernen',
+  'rte.link_url': 'URL:',
+
+  // Send dialog
+  'email.senden_titel': 'Rechnung per E-Mail senden',
+  'email.empfaenger': 'Empfänger',
+  'email.cc': 'CC',
+  'email.bcc': 'BCC',
+  'email.vorlage': 'E-Mail-Vorlage',
+  'email.anhang_typ': 'Anhang',
+  'email.anhang_zugferd': 'ZUGFeRD PDF',
+  'email.anhang_xml': 'XRechnung XML',
+  'email.anhang_zugferd_xml': 'ZUGFeRD PDF + XML',
+  'email.pdf_vorlage': 'PDF-Vorlage',
+  'email.vorschau_betreff': 'Betreff-Vorschau',
+  'email.vorschau_text': 'Text-Vorschau',
+  'email.senden': 'Senden',
+  'email.wird_gesendet': 'Wird gesendet…',
+  'email.gesendet': 'E-Mail gesendet',
+  'email.senden_fehlgeschlagen': 'E-Mail-Versand fehlgeschlagen',
+  'email.kein_empfaenger': 'Keine E-Mail-Adresse beim Käufer hinterlegt',
+  'email.pdf_vorlage_erforderlich': 'PDF-Vorlage für ZUGFeRD-Anhang erforderlich',
+
+  // Email log
+  'email.protokoll_titel': 'E-Mail-Protokoll',
+  'email.protokoll_datum': 'Gesendet',
+  'email.protokoll_rechnung': 'Rechnung',
+  'email.protokoll_empfaenger': 'Empfänger',
+  'email.protokoll_betreff': 'Betreff',
+  'email.protokoll_anhang': 'Anhang',
+  'email.protokoll_status': 'Status',
+  'email.protokoll_erfolgreich': 'Gesendet',
+  'email.protokoll_fehler': 'Fehler',
+  'email.protokoll_leer': 'Noch keine E-Mails versendet',
+
+  // Recurring invoice auto-send
+  'email.auto_senden': 'Automatischer E-Mail-Versand',
+  'email.auto_senden_aktivieren': 'Nach Erstellung automatisch senden',
+  'email.auto_senden_vorlage': 'E-Mail-Vorlage',
+  'email.auto_senden_anhang': 'Anhang-Typ',
+  'email.auto_senden_pdf_vorlage': 'PDF-Vorlage',
 } as const;
 
 export default deDe;

@@ -12,6 +12,9 @@
   import RecurringCalendarPreview from '../lib/components/RecurringCalendarPreview.svelte';
   import DatePicker from '../lib/components/DatePicker.svelte';
   import FormSelect from '../lib/components/FormSelect.svelte';
+  import { emailApi } from '../lib/api/emailApi.js';
+  import { pdfTemplateApi } from '../lib/api/pdfTemplateApi.js';
+  import type { EmailTemplateDto, PdfTemplateDto } from '$shared/types';
 
   // ── Page state ────────────────────────────────────────────────────────────
   let rules: any[] = $state([]);
@@ -26,6 +29,10 @@
   let editingRule: any = $state(null); // null = creating new
   let saving = $state(false);
   let modalError = $state('');
+
+  // ── Email auto-send data ──────────────────────────────────────────────────
+  let emailTemplates = $state<EmailTemplateDto[]>([]);
+  let pdfTemplates = $state<PdfTemplateDto[]>([]);
 
   // ── Calendar preview state ────────────────────────────────────────────────
   let calendarOffset = $state(0);
@@ -51,6 +58,11 @@
     dueDateOffsetDays: 30,
     deliveryDateOffsetDays: 0,
     active: true,
+    // Auto-send email fields
+    autoSendEmail: false,
+    autoSendEmailTemplateId: undefined as number | undefined,
+    autoSendAttachmentType: 'zugferd' as 'zugferd' | 'xml' | 'zugferd+xml',
+    autoSendPdfTemplateId: undefined as number | undefined,
   });
 
   onMount(load);
@@ -59,14 +71,18 @@
     loading = true;
     error = '';
     try {
-      const [rulesData, templatesData, numberTemplatesData] = await Promise.all([
+      const [rulesData, templatesData, numberTemplatesData, emailTpls, pdfTpls] = await Promise.all([
         recurringInvoiceApi.list(),
         invoiceTemplateApi.list(),
         invoiceNumberTemplateApi.list(),
+        emailApi.listTemplates(),
+        pdfTemplateApi.list(),
       ]);
       rules = rulesData;
       invoiceTemplates = templatesData;
       numberTemplates = numberTemplatesData;
+      emailTemplates = emailTpls;
+      pdfTemplates = pdfTpls;
     } catch (e: any) {
       error = e.message;
     } finally {
@@ -91,6 +107,10 @@
       dueDateOffsetDays: 30,
       deliveryDateOffsetDays: 0,
       active: true,
+      autoSendEmail: false,
+      autoSendEmailTemplateId: emailTemplates.find(et => et.isDefault)?.id ?? emailTemplates[0]?.id,
+      autoSendAttachmentType: 'zugferd',
+      autoSendPdfTemplateId: pdfTemplates[0]?.id,
     };
     templateDueDays = null;
     templateDeliveryDays = null;
@@ -124,6 +144,10 @@
       dueDateOffsetDays: rule.dueDateOffsetDays ?? 30,
       deliveryDateOffsetDays: rule.deliveryDateOffsetDays ?? 0,
       active: rule.active ?? true,
+      autoSendEmail: rule.autoSendEmail ?? false,
+      autoSendEmailTemplateId: rule.autoSendEmailTemplateId,
+      autoSendAttachmentType: rule.autoSendAttachmentType ?? 'zugferd',
+      autoSendPdfTemplateId: rule.autoSendPdfTemplateId,
     };
     templateDueDays = null;
     templateDeliveryDays = null;
@@ -148,6 +172,17 @@
       dueDateOffsetDays: Number(editForm.dueDateOffsetDays),
       deliveryDateOffsetDays: Number(editForm.deliveryDateOffsetDays),
       active: editForm.active,
+      // Auto-send email
+      autoSendEmail: editForm.autoSendEmail,
+      autoSendEmailTemplateId: editForm.autoSendEmail && editForm.autoSendEmailTemplateId
+        ? Number(editForm.autoSendEmailTemplateId)
+        : undefined,
+      autoSendAttachmentType: editForm.autoSendEmail ? editForm.autoSendAttachmentType : undefined,
+      autoSendPdfTemplateId: editForm.autoSendEmail &&
+        (editForm.autoSendAttachmentType === 'zugferd' || editForm.autoSendAttachmentType === 'zugferd+xml') &&
+        editForm.autoSendPdfTemplateId
+        ? Number(editForm.autoSendPdfTemplateId)
+        : undefined,
     };
     if (editForm.frequency === 'weekly' || editForm.frequency === 'biweekly') {
       dto.dayOfWeek = Number(editForm.dayOfWeek);
@@ -680,6 +715,56 @@
               </div>
             </div>
           </div>
+
+          <!-- Auto-send email section -->
+          <div class="section-divider">{t('email.auto_senden')}</div>
+
+          <label class="checkbox-label" style="margin-bottom: 0.75rem;">
+            <input type="checkbox" bind:checked={editForm.autoSendEmail} />
+            {t('email.auto_senden_aktivieren')}
+          </label>
+
+          {#if editForm.autoSendEmail}
+            <div class="form-group">
+              <label for="rule-email-tpl">{t('email.auto_senden_vorlage')}</label>
+              <FormSelect
+                id="rule-email-tpl"
+                bind:value={editForm.autoSendEmailTemplateId}
+                placeholder="— E-Mail-Vorlage wählen —"
+                items={emailTemplates.map(etpl => ({ value: String(etpl.id), name: etpl.name + (etpl.isDefault ? ' ★' : '') }))}
+              />
+            </div>
+
+            <div class="form-group">
+              <span class="form-label-text">{t('email.auto_senden_anhang')}</span>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" bind:group={editForm.autoSendAttachmentType} value="zugferd" />
+                  {t('email.anhang_zugferd')}
+                </label>
+                <label class="radio-option">
+                  <input type="radio" bind:group={editForm.autoSendAttachmentType} value="xml" />
+                  {t('email.anhang_xml')}
+                </label>
+                <label class="radio-option">
+                  <input type="radio" bind:group={editForm.autoSendAttachmentType} value="zugferd+xml" />
+                  {t('email.anhang_zugferd_xml')}
+                </label>
+              </div>
+            </div>
+
+            {#if editForm.autoSendAttachmentType === 'zugferd' || editForm.autoSendAttachmentType === 'zugferd+xml'}
+              <div class="form-group">
+                <label for="rule-pdf-tpl">{t('email.auto_senden_pdf_vorlage')}</label>
+                <FormSelect
+                  id="rule-pdf-tpl"
+                  bind:value={editForm.autoSendPdfTemplateId}
+                  placeholder="— PDF-Vorlage wählen —"
+                  items={pdfTemplates.map(ptpl => ({ value: String(ptpl.id), name: ptpl.name }))}
+                />
+              </div>
+            {/if}
+          {/if}
         </div>
 
         <!-- Right column: calendar preview -->
@@ -1231,5 +1316,35 @@
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
     padding: 0.2rem 0.35rem 0.2rem 0.5rem;
+  }
+
+  .section-divider {
+    font-family: var(--font-display), sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0.85rem 0 0.6rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-divider::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: var(--amber);
+    border-radius: 2px;
+  }
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.3rem;
   }
 </style>

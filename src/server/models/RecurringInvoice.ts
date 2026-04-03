@@ -19,6 +19,11 @@ interface Row {
   next_scheduled_date: string | null;
   created_at: string;
   updated_at: string;
+  // Email auto-send fields (added via migration)
+  auto_send_email: number | null;
+  email_template_id: number | null;
+  email_attachment_type: string | null;
+  pdf_template_id: number | null;
 }
 
 export class RecurringInvoiceModel {
@@ -70,8 +75,9 @@ export class RecurringInvoiceModel {
           frequency, day_of_week, day_of_month, month_position,
           start_date, end_date,
           due_date_offset_days, delivery_date_offset_days,
-          active, last_generated_date, next_scheduled_date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          active, last_generated_date, next_scheduled_date,
+          auto_send_email, email_template_id, email_attachment_type, pdf_template_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `)
       .run(
         dto.name,
@@ -88,6 +94,10 @@ export class RecurringInvoiceModel {
         dto.active ? 1 : 0,
         dto.lastGeneratedDate ?? null,
         dto.nextScheduledDate ?? null,
+        dto.autoSendEmail ? 1 : 0,
+        dto.emailTemplateId ?? null,
+        dto.emailAttachmentType ?? 'zugferd',
+        dto.pdfTemplateId ?? null,
       );
     return this.findById(result.lastInsertRowid as number)!;
   }
@@ -102,6 +112,7 @@ export class RecurringInvoiceModel {
           start_date = ?, end_date = ?,
           due_date_offset_days = ?, delivery_date_offset_days = ?,
           active = ?, last_generated_date = ?, next_scheduled_date = ?,
+          auto_send_email = ?, email_template_id = ?, email_attachment_type = ?, pdf_template_id = ?,
           updated_at = datetime('now')
         WHERE id = ?
       `)
@@ -120,6 +131,10 @@ export class RecurringInvoiceModel {
         dto.active ? 1 : 0,
         dto.lastGeneratedDate ?? null,
         dto.nextScheduledDate ?? null,
+        dto.autoSendEmail ? 1 : 0,
+        dto.emailTemplateId ?? null,
+        dto.emailAttachmentType ?? 'zugferd',
+        dto.pdfTemplateId ?? null,
         id,
       );
     return this.findById(id)!;
@@ -162,6 +177,10 @@ export class RecurringInvoiceModel {
       active: row.active === 1,
       lastGeneratedDate: row.last_generated_date ?? undefined,
       nextScheduledDate: row.next_scheduled_date ?? undefined,
+      autoSendEmail: (row.auto_send_email ?? 0) === 1,
+      emailTemplateId: row.email_template_id ?? undefined,
+      emailAttachmentType: (row.email_attachment_type ?? 'zugferd') as RecurringInvoiceDto['emailAttachmentType'],
+      pdfTemplateId: row.pdf_template_id ?? undefined,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };

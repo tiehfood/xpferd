@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import type { RecurringInvoiceDto } from '../../shared/types/index.js';
 import { RecurringInvoiceService } from '../services/RecurringInvoiceService.js';
 import { recurringInvoiceSchema } from '../validators/recurringInvoiceValidator.js';
@@ -75,19 +75,27 @@ export class RecurringInvoiceController {
     res.json(result);
   };
 
-  generate = (req: Request, res: Response): void => {
+  generate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const id = Number(req.params.id);
-    const result = this.service.generateInvoice(id);
-    if ('error' in result) {
-      res.status(400).json({ error: result.error });
-      return;
+    try {
+      const result = await this.service.generateInvoice(id);
+      if ('error' in result) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
+      res.status(201).json(result);
+    } catch (err) {
+      next(err);
     }
-    res.status(201).json(result);
   };
 
-  generateAll = (_req: Request, res: Response): void => {
-    const result = this.service.generateDueInvoices();
-    res.json(result);
+  generateAll = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.service.generateDueInvoices();
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
   };
 
   previewOccurrences = (req: Request, res: Response): void => {
