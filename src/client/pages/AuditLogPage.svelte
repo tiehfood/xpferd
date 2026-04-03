@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { push } from 'svelte-spa-router';
+  import AppBadge from '../lib/components/AppBadge.svelte';
+  import BadgeDot from '../lib/components/BadgeDot.svelte';
   import { t } from '../lib/i18n.js';
   import { recurringInvoiceApi } from '../lib/api/recurringInvoiceApi.js';
   import { fmtDate as formatDateStr } from '../../shared/constants/format.js';
@@ -121,16 +123,16 @@
             </td>
             <td class="status-cell">
               {#if log.status === 'success'}
-                <span class="badge badge-success">
-                  <span class="badge-dot"></span>
+                <AppBadge variant="success" rounded>
+                  <BadgeDot color="success" />
                   {t('auditlog.erfolg')}
-                </span>
+                </AppBadge>
               {:else}
                 <div class="status-error-group">
-                  <span class="badge badge-error">
-                    <span class="badge-dot"></span>
+                  <AppBadge variant="danger" rounded>
+                    <BadgeDot color="danger" />
                     {t('auditlog.fehler')}
-                  </span>
+                  </AppBadge>
                   {#if log.errorMessage}
                     <span class="error-message">{log.errorMessage}</span>
                   {/if}
@@ -286,19 +288,6 @@
 
   .status-cell {
     white-space: nowrap;
-  }
-
-  .badge-error {
-    background: #fef2f2;
-    color: #991b1b;
-  }
-
-  .badge-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
   }
 
   .status-error-group {

@@ -5,6 +5,7 @@
   import { lineItemTemplateApi } from '../api/templateApi';
   import { getSettings } from '../settingsStore.svelte';
   import { t } from '../i18n.js';
+  import FormSelect from './FormSelect.svelte';
 
   let { lines = $bindable(), kleinunternehmer = false, onchange = () => {} }: {
     lines: any[];
@@ -39,16 +40,16 @@
 
   function addFromTemplate() {
     if (!selectedTemplateId) return;
-    const t = lineTemplates.find((t: any) => String(t.id) === selectedTemplateId);
-    if (!t) return;
+    const tpl = lineTemplates.find((tpl: any) => String(tpl.id) === selectedTemplateId);
+    if (!tpl) return;
     const newLine = {
       lineNumber: 1,
       quantity: 1,
-      unitCode: t.unitCode,
-      itemName: t.name,
-      netPrice: t.netPrice,
-      vatCategoryCode: kleinunternehmer ? 'E' : t.vatCategoryCode,
-      vatRate: kleinunternehmer ? 0 : t.vatRate,
+      unitCode: tpl.unitCode,
+      itemName: tpl.name,
+      netPrice: tpl.netPrice,
+      vatCategoryCode: kleinunternehmer ? 'E' : tpl.vatCategoryCode,
+      vatRate: kleinunternehmer ? 0 : tpl.vatRate,
       lineNetAmount: 0,
     };
     // Replace a single empty default line instead of appending
@@ -82,12 +83,12 @@
     <div class="card-header" style="border: none; margin: 0; padding: 0;">{t('lines.positionen')}</div>
     <div class="lines-header-actions">
       {#if lineTemplates.length > 0}
-        <select class="template-select" bind:value={selectedTemplateId}>
-          <option value="">{t('lines.vorlage_placeholder')}</option>
-          {#each lineTemplates as tpl}
-            <option value={String(tpl.id)}>{tpl.name}</option>
-          {/each}
-        </select>
+        <FormSelect
+          class="template-select"
+          bind:value={selectedTemplateId}
+          placeholder={t('lines.vorlage_placeholder')}
+          items={lineTemplates.map(tpl => ({ value: String(tpl.id), name: tpl.name }))}
+        />
         <button class="ghost" onclick={addFromTemplate} disabled={!selectedTemplateId}>{t('lines.hinzufuegen')}</button>
       {/if}
       <button class="primary add-line-btn" onclick={addLine}>
@@ -136,11 +137,10 @@
                 <input type="number" step="0.01" min="0" bind:value={line.quantity} oninput={handleInput} />
               </td>
               <td class="col-unit">
-                <select bind:value={line.unitCode}>
-                  {#each Object.entries(UNIT_CODES) as [code]}
-                    <option value={code}>{t(('code.unit.' + code) as any)}</option>
-                  {/each}
-                </select>
+                <FormSelect
+                  bind:value={line.unitCode}
+                  items={Object.entries(UNIT_CODES).map(([code]) => ({ value: code, name: t(('code.unit.' + code) as any) }))}
+                />
               </td>
               <td class="col-price">
                 {#if editingPriceIndex === i}
@@ -157,11 +157,10 @@
               </td>
               {#if !kleinunternehmer}
                 <td class="col-vat">
-                  <select bind:value={line.vatCategoryCode}>
-                    {#each Object.entries(VAT_CATEGORY_CODES) as [code]}
-                      <option value={code}>{code}</option>
-                    {/each}
-                  </select>
+                  <FormSelect
+                    bind:value={line.vatCategoryCode}
+                    items={Object.entries(VAT_CATEGORY_CODES).map(([code]) => ({ value: code, name: code }))}
+                  />
                 </td>
                 <td class="col-vatrate">
                   <input type="number" step="0.01" min="0" bind:value={line.vatRate} oninput={handleInput} />
@@ -213,7 +212,8 @@
     align-items: center;
   }
 
-  .template-select {
+  /* .template-select is forwarded to the FormSelect wrapper div via the class prop */
+  .lines-header-actions :global(.template-select) {
     width: auto;
     min-width: 120px;
   }
@@ -239,15 +239,7 @@
     padding: 0 1.35rem;
   }
 
-  table input, table select {
-    font-size: 0.8125rem;
-    border-radius: var(--radius);
-  }
-
-  /* Selects need right padding for the dropdown arrow (global sets 2rem) */
-  table select {
-    padding-right: 2rem;
-  }
+  /* table inputs inherit global styles (--radius-lg, 0.8125rem) — do NOT override */
 
   .required {
     color: var(--danger);

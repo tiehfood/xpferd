@@ -13,7 +13,7 @@ fs.mkdirSync(outdir, { recursive: true });
 
 // Build Tailwind CSS (includes Flowbite)
 console.log('Building Tailwind CSS...');
-execSync('npx tailwindcss -i src/client/tailwind.css -o dist/client/tailwind.css --minify', {
+execSync('npx @tailwindcss/cli -i src/client/tailwind.css -o dist/client/tailwind.css --minify', {
   stdio: 'inherit',
 });
 
@@ -28,19 +28,20 @@ for (const f of fs.readdirSync(iconsSrc)) {
   fs.copyFileSync(path.join(iconsSrc, f), path.join(iconsDst, f));
 }
 
-// Generate index.html
+// Generate index.html (cache-bust query string forces browser reload after rebuild)
+const cacheBust = Date.now();
 const html = `<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>X(P)FeRD</title>
-  <link rel="stylesheet" href="/tailwind.css">
-  <link rel="stylesheet" href="/app.css">
+  <link rel="stylesheet" href="/tailwind.css?v=${cacheBust}">
+  <link rel="stylesheet" href="/app.css?v=${cacheBust}">
 </head>
 <body>
   <div id="app"></div>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=${cacheBust}"></script>
 </body>
 </html>`;
 fs.writeFileSync(path.join(outdir, 'index.html'), html);

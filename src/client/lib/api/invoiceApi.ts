@@ -1,3 +1,5 @@
+import { t } from '../i18n.js';
+
 const BASE = '/api/v1/invoices';
 
 const FIELD_LABELS: Record<string, string> = {
@@ -53,9 +55,9 @@ function formatValidationErrors(details: any[]): string {
       const lineNum = Number(lineMatch[1]) + 1;
       const field = lineMatch[2];
       const fieldNames: Record<string, string> = {
-        itemName: 'Bezeichnung', quantity: 'Menge', unitCode: 'Einheit',
-        netPrice: 'Einzelpreis', vatCategoryCode: 'USt-Kategorie', vatRate: 'USt-Satz',
-        itemDescription: 'Beschreibung',
+        itemName: t('lines.bezeichnung'), quantity: t('lines.menge'), unitCode: t('lines.einheit'),
+        netPrice: t('lines.einzelpreis'), vatCategoryCode: 'USt-Kategorie', vatRate: 'USt-Satz',
+        itemDescription: t('lines.beschreibung'),
       };
       msg = `Position ${lineNum}: ${fieldNames[field] ?? field}`;
     } else {

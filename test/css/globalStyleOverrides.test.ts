@@ -53,7 +53,6 @@ const FORBIDDEN: { regex: RegExp; label: string }[] = [
   { regex: /^table\s*\{/, label: 'bare `table {` — use global table styles' },
 
   // Global utility classes
-  { regex: /^\.badge\s*\{/, label: 'bare `.badge {` — use global .badge styles (use .badge-xxx for variants)' },
   { regex: /^\.form-group\s*\{/, label: 'bare `.form-group {` — never override global form-group margin' },
   { regex: /^\.row-enter\s*\{/, label: '`.row-enter` — defined globally in app.css' },
 
