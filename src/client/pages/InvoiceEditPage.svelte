@@ -12,6 +12,7 @@
   import PaymentSection from '../lib/components/PaymentSection.svelte';
   import LinesSection from '../lib/components/LinesSection.svelte';
   import TotalsSection from '../lib/components/TotalsSection.svelte';
+  import FormSelect from '../lib/components/FormSelect.svelte';
 
   let { params = {} }: { params?: { id?: string } } = $props();
 
@@ -26,6 +27,7 @@
   let templateNameInput = $state('');
   let showTemplateSaveModal = $state(false);
   let selectedInvNumTemplateId = $state('');
+  let selectedTemplateId = $state('');
   let liveWarnings = $derived(checkInvoiceWarnings(invoice));
 
   function createEmpty(): any {
@@ -154,8 +156,7 @@
   }
 
   async function applyTemplate(e: Event) {
-    const select = e.target as HTMLSelectElement;
-    const id = Number(select.value);
+    const id = Number((e.target as HTMLSelectElement).value);
     if (!id) return;
     try {
       const tpl = await invoiceTemplateApi.get(id);
@@ -185,7 +186,8 @@
     } catch (e: any) {
       error = e.message;
     }
-    select.value = '';
+    // Reset template selector after applying
+    selectedTemplateId = '';
   }
 
   function fmtDate(d: string): string {
@@ -240,12 +242,13 @@
     </div>
     <div class="header-actions">
       {#if isNew && invoiceTemplates.length > 0}
-        <select class="template-select" onchange={applyTemplate}>
-          <option value="">{t('invoice_edit.aus_vorlage')}</option>
-          {#each invoiceTemplates as tpl}
-            <option value={tpl.id}>{tpl.name}</option>
-          {/each}
-        </select>
+        <FormSelect
+          class="template-select"
+          bind:value={selectedTemplateId}
+          onchange={applyTemplate}
+          placeholder={t('invoice_edit.aus_vorlage')}
+          items={invoiceTemplates.map(tpl => ({ value: String(tpl.id), name: tpl.name }))}
+        />
       {/if}
       <button class="ghost" onclick={openSaveAsTemplate}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -457,7 +460,8 @@
     gap: 0.85rem;
   }
 
-  .template-select {
+  /* .template-select is forwarded to the FormSelect wrapper div via the class prop */
+  :global(.template-select) {
     width: auto;
     min-width: 160px;
   }

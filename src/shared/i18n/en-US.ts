@@ -452,6 +452,27 @@ const enUs = {
   'pdf_builder.pdf_oeffnen': 'Open PDF',
   'pdf_builder.leinwand_label': 'PDF Canvas',
 
+  // ── PDF document labels (rendered in actual PDF output) ──────────────────
+  'pdf.rechnung': 'Invoice',
+  'pdf.nr': 'No.:',
+  'pdf.datum': 'Date:',
+  'pdf.faellig': 'Due:',
+  'pdf.referenz': 'Reference:',
+  'pdf.ust_idnr': 'VAT ID:',
+  'pdf.steuernr': 'Tax No.:',
+  'pdf.nettobetrag': 'Net Amount:',
+  'pdf.bruttobetrag': 'Gross Amount:',
+  'pdf.rechnungssumme': 'Invoice Total:',
+  'pdf.ust_prefix': 'VAT',
+  'pdf.zahlungsart': 'Payment Method:',
+  'pdf.zahlungsziel': 'Payment Terms:',
+  'pdf.pos': 'No.',
+  'pdf.bezeichnung': 'Description',
+  'pdf.menge': 'Qty',
+  'pdf.einheit': 'Unit',
+  'pdf.einzelpreis': 'Unit Price',
+  'pdf.netto': 'Net',
+
   // ── Code Lists (dropdowns) ──────────────────────────────────────────────
   'code.invoice_type.380': 'Invoice',
   'code.invoice_type.381': 'Credit Note',

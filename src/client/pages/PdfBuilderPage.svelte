@@ -9,6 +9,7 @@
   import { computeBlockContentHeight } from '$shared/utils/blockMetrics';
   import { snapBlockToOthers, alignToJustify, snapEdgeToBlockBounds } from '$shared/utils/blockSnapUtils';
   import { t } from '../lib/i18n.js';
+  import FormSelect from '../lib/components/FormSelect.svelte';
   import { injectFontFaces } from '../lib/utils/fontFaces.js';
   import { extractFontName, arrayBufferToBase64 } from '../lib/utils/fontName.js';
   import { guideToPosition, positionToGuide } from '$shared/utils/guideConvert';
@@ -173,48 +174,50 @@
   interface BlockTypeMeta { type: PdfBlockDto['type']; label: string; icon: string; defaultW: number; defaultH: number }
   interface PaletteGroup { key: string; label: string; items: BlockTypeMeta[] }
 
-  const PALETTE_GROUPS: PaletteGroup[] = [
-    { key: 'addresses', label: 'Adressen', items: [
-      { type: 'seller-address', label: 'Verkäufer', icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2|M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8', defaultW: 220, defaultH: 105 },
-      { type: 'buyer-address', label: 'Käufer', icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2|M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8|M23 21v-2a4 4 0 0 0-3-3.87|M16 3.13a4 4 0 0 1 0 7.75', defaultW: 220, defaultH: 70 },
-    ]},
-    { key: 'header', label: 'Kopfdaten', items: [
-      { type: 'invoice-title', label: 'Titel', icon: 'M4 7V4h16v3|M9 20h6|M12 4v16', defaultW: 100, defaultH: 22 },
-      { type: 'invoice-number', label: 'Rechnungsnr.', icon: 'M4 9h16|M4 15h16|M10 3L8 21|M16 3l-2 18', defaultW: 180, defaultH: 20 },
-      { type: 'invoice-date', label: 'Datum', icon: 'M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M16 2v4|M8 2v4|M3 10h18', defaultW: 150, defaultH: 20 },
-      { type: 'due-date', label: 'Fällig', icon: 'M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M16 2v4|M8 2v4|M3 10h18', defaultW: 150, defaultH: 20 },
-      { type: 'buyer-reference', label: 'Referenz', icon: 'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71|M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71', defaultW: 180, defaultH: 20 },
-      { type: 'invoice-header', label: 'Komplett', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z|M14 2v6h6|M16 13H8|M16 17H8', defaultW: 220, defaultH: 65 },
-    ]},
-    { key: 'lines', label: 'Positionen', items: [
-      { type: 'lines-table', label: 'Tabelle', icon: 'M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18', defaultW: 500, defaultH: 200 },
-    ]},
-    { key: 'totals', label: 'Summen', items: [
-      { type: 'total-net', label: 'Nettobetrag', icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 20 },
-      { type: 'total-tax', label: 'USt.', icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 20 },
-      { type: 'total-gross', label: 'Bruttobetrag', icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 20 },
-      { type: 'totals', label: 'Komplett', icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 60 },
-    ]},
-    { key: 'payment', label: 'Zahlung', items: [
-      { type: 'payment-means', label: 'Zahlungsart', icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 200, defaultH: 20 },
-      { type: 'iban-bic', label: 'IBAN/BIC', icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 250, defaultH: 35 },
-      { type: 'payment-terms', label: 'Zahlungsziel', icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 200, defaultH: 20 },
-      { type: 'payment-info', label: 'Komplett', icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 250, defaultH: 80 },
-    ]},
-    { key: 'misc', label: 'Sonstiges', items: [
-      { type: 'free-text', label: 'Freitext', icon: 'M17 10H3|M21 6H3|M21 14H3|M17 18H3', defaultW: 200, defaultH: 40 },
-      { type: 'image', label: 'Bild', icon: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z|M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z|M21 15l-5-5L5 21', defaultW: 120, defaultH: 60 },
-      { type: 'line', label: 'Linie', icon: 'M5 12h14', defaultW: 200, defaultH: 2 },
-      { type: 'kleinunternehmer-note', label: '§19 UStG', icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z|M12 16v-4|M12 8h.01', defaultW: 350, defaultH: 18 },
-    ]},
-  ];
+  function getPaletteGroups(): PaletteGroup[] {
+    return [
+      { key: 'addresses', label: t('pdf_builder.gruppe_adressen'), items: [
+        { type: 'seller-address', label: t('pdf_builder.block_verkaeufer'), icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2|M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8', defaultW: 220, defaultH: 105 },
+        { type: 'buyer-address', label: t('pdf_builder.block_kaeufer'), icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2|M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8|M23 21v-2a4 4 0 0 0-3-3.87|M16 3.13a4 4 0 0 1 0 7.75', defaultW: 220, defaultH: 70 },
+      ]},
+      { key: 'header', label: t('pdf_builder.gruppe_kopfdaten'), items: [
+        { type: 'invoice-title', label: t('pdf_builder.block_titel'), icon: 'M4 7V4h16v3|M9 20h6|M12 4v16', defaultW: 100, defaultH: 22 },
+        { type: 'invoice-number', label: t('pdf_builder.block_rechnungsnr'), icon: 'M4 9h16|M4 15h16|M10 3L8 21|M16 3l-2 18', defaultW: 180, defaultH: 20 },
+        { type: 'invoice-date', label: t('pdf_builder.block_datum'), icon: 'M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M16 2v4|M8 2v4|M3 10h18', defaultW: 150, defaultH: 20 },
+        { type: 'due-date', label: t('pdf_builder.block_faellig'), icon: 'M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M16 2v4|M8 2v4|M3 10h18', defaultW: 150, defaultH: 20 },
+        { type: 'buyer-reference', label: t('pdf_builder.block_referenz'), icon: 'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71|M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71', defaultW: 180, defaultH: 20 },
+        { type: 'invoice-header', label: t('pdf_builder.block_komplett'), icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z|M14 2v6h6|M16 13H8|M16 17H8', defaultW: 220, defaultH: 65 },
+      ]},
+      { key: 'lines', label: t('pdf_builder.gruppe_positionen'), items: [
+        { type: 'lines-table', label: t('pdf_builder.block_tabelle'), icon: 'M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18', defaultW: 500, defaultH: 200 },
+      ]},
+      { key: 'totals', label: t('pdf_builder.gruppe_summen'), items: [
+        { type: 'total-net', label: t('pdf_builder.block_nettobetrag'), icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 20 },
+        { type: 'total-tax', label: t('pdf_builder.block_ust'), icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 20 },
+        { type: 'total-gross', label: t('pdf_builder.block_bruttobetrag'), icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 20 },
+        { type: 'totals', label: t('pdf_builder.block_komplett'), icon: 'M12 1v22|M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', defaultW: 200, defaultH: 60 },
+      ]},
+      { key: 'payment', label: t('pdf_builder.gruppe_zahlung'), items: [
+        { type: 'payment-means', label: t('pdf_builder.block_zahlungsart'), icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 200, defaultH: 20 },
+        { type: 'iban-bic', label: t('pdf_builder.block_iban_bic'), icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 250, defaultH: 35 },
+        { type: 'payment-terms', label: t('pdf_builder.block_zahlungsziel'), icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 200, defaultH: 20 },
+        { type: 'payment-info', label: t('pdf_builder.block_komplett'), icon: 'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z|M1 10h22', defaultW: 250, defaultH: 80 },
+      ]},
+      { key: 'misc', label: t('pdf_builder.gruppe_sonstiges'), items: [
+        { type: 'free-text', label: t('pdf_builder.block_freitext'), icon: 'M17 10H3|M21 6H3|M21 14H3|M17 18H3', defaultW: 200, defaultH: 40 },
+        { type: 'image', label: t('pdf_builder.block_bild'), icon: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z|M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z|M21 15l-5-5L5 21', defaultW: 120, defaultH: 60 },
+        { type: 'line', label: t('pdf_builder.block_linie'), icon: 'M5 12h14', defaultW: 200, defaultH: 2 },
+        { type: 'kleinunternehmer-note', label: t('pdf_builder.block_par19'), icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z|M12 16v-4|M12 8h.01', defaultW: 350, defaultH: 18 },
+      ]},
+    ];
+  }
 
-  // Flat lookup for backward compatibility
-  const ALL_BLOCK_TYPES: BlockTypeMeta[] = PALETTE_GROUPS.flatMap(g => g.items);
+  // Flat lookup for backward compatibility — reactive so blockLabel() updates with locale
+  let ALL_BLOCK_TYPES: BlockTypeMeta[] = $derived(getPaletteGroups().flatMap(g => g.items));
 
-  // Palette expand/collapse state (all start expanded)
+  // Palette expand/collapse state (all start expanded, keys are locale-independent)
   let expandedGroups: Record<string, boolean> = $state(
-    Object.fromEntries(PALETTE_GROUPS.map(g => [g.key, true]))
+    Object.fromEntries(['addresses', 'header', 'lines', 'totals', 'payment', 'misc'].map(k => [k, true]))
   );
 
   function toggleGroup(key: string) {
@@ -546,18 +549,38 @@
     const block = template.blocks.find(b => b.id === dragBlockId);
     if (block) {
       const blockH = isAutoHeight(block.type) ? Math.max(Math.ceil(computeBlockContentHeight(block, previewInvoice)), 8) : block.height;
+      // Snap to guide lines on raw position
+      const guideSnap = snapToGuides(newX, newY, block.width, blockH);
+      // Snap to other blocks also on raw position (NOT on guide-snapped position)
+      const blockSnap = snapToBlocks(newX, newY, block.width, blockH, dragBlockId!);
+
+      // Pick the closer snap per axis; guide wins ties
+      const guideDx = Math.abs(guideSnap.x - newX);
+      const blockDx = Math.abs(blockSnap.x - newX);
+      const guideDy = Math.abs(guideSnap.y - newY);
+      const blockDy = Math.abs(blockSnap.y - newY);
+
+      if (guideSnap.x !== newX || blockSnap.x !== newX) {
+        if (guideSnap.x !== newX && (blockSnap.x === newX || guideDx <= blockDx)) {
+          newX = guideSnap.x;
+        } else {
+          newX = blockSnap.x;
+        }
+      }
+      if (guideSnap.y !== newY || blockSnap.y !== newY) {
+        if (guideSnap.y !== newY && (blockSnap.y === newY || guideDy <= blockDy)) {
+          newY = guideSnap.y;
+        } else {
+          newY = blockSnap.y;
+        }
+      }
+
+      snappingGuideIds = guideSnap.snappedIds;
+      snappingBlockIds = blockSnap.snappedIds;
+
+      // Clamp to page bounds after snapping
       newX = Math.max(0, Math.min(newX, pageWidth - block.width));
       newY = Math.max(0, Math.min(newY, pageHeight - blockH));
-      // Snap to guide lines
-      const snap = snapToGuides(newX, newY, block.width, blockH);
-      newX = snap.x;
-      newY = snap.y;
-      snappingGuideIds = snap.snappedIds;
-      // Snap to other blocks
-      const blockSnap = snapToBlocks(newX, newY, block.width, blockH, dragBlockId!);
-      newX = blockSnap.x;
-      newY = blockSnap.y;
-      snappingBlockIds = blockSnap.snappedIds;
     }
     updateBlock(dragBlockId, { x: newX, y: newY });
   }
@@ -639,14 +662,22 @@
       }
     }
 
-    // Snap moving edges to guide lines (including page borders)
+    // Snap moving edges to guide lines (including page borders and margins)
     const guides = getGuideLines();
+    const mL = marginLeft * CM_TO_PTS;
+    const mR = pageWidth - marginRight * CM_TO_PTS;
+    const mT = marginTop * CM_TO_PTS;
+    const mB = pageHeight - marginBottom * CM_TO_PTS;
     const allGuides = [
       ...guides,
       { id: '__page_left',   orientation: 'vertical'   as const, position: 0,          locked: true },
       { id: '__page_right',  orientation: 'vertical'   as const, position: pageWidth,   locked: true },
       { id: '__page_top',    orientation: 'horizontal' as const, position: 0,          locked: true },
       { id: '__page_bottom', orientation: 'horizontal' as const, position: pageHeight,  locked: true },
+      { id: '__margin_left',   orientation: 'vertical'   as const, position: mL, locked: true },
+      { id: '__margin_right',  orientation: 'vertical'   as const, position: mR, locked: true },
+      { id: '__margin_top',    orientation: 'horizontal' as const, position: mT, locked: true },
+      { id: '__margin_bottom', orientation: 'horizontal' as const, position: mB, locked: true },
     ];
     for (const g of allGuides) {
       if (g.orientation === 'vertical') {
@@ -675,20 +706,57 @@
     }
 
     // Snap moving horizontal edges to other blocks' left/right bounds
+    // and vertical edges to other blocks' top/bottom bounds
     {
-      const others = template.blocks
+      const newSnapped = new Set<string>();
+
+      // Horizontal (left/right) edge snapping
+      const hOthers = template.blocks
         .filter(b => b.id !== resizeBlockId)
         .map(b => ({ id: b.id, x: b.x, width: b.width }));
-      const newSnapped = new Set<string>();
       if (resizeDir.includes('e')) {
-        const snap = snapEdgeToBlockBounds(newX + newW, others, SNAP_THRESHOLD);
+        const snap = snapEdgeToBlockBounds(newX + newW, hOthers, SNAP_THRESHOLD);
         if (snap.snappedId !== null) { newW = Math.max(20, snap.value - newX); newSnapped.add(snap.snappedId); }
       }
       if (resizeDir.includes('w')) {
         const right = resizeBlockStartX + resizeBlockStartW;
-        const snap = snapEdgeToBlockBounds(newX, others, SNAP_THRESHOLD);
+        const snap = snapEdgeToBlockBounds(newX, hOthers, SNAP_THRESHOLD);
         if (snap.snappedId !== null) { newX = snap.value; newW = Math.max(20, right - newX); newSnapped.add(snap.snappedId); }
       }
+
+      // Vertical (top/bottom) edge snapping
+      const vOthers = template.blocks
+        .filter(b => b.id !== resizeBlockId)
+        .map(b => {
+          const bh = isAutoHeight(b.type) ? Math.max(Math.ceil(computeBlockContentHeight(b, previewInvoice)), 8) : b.height;
+          return { id: b.id, y: b.y, height: bh };
+        });
+      if (resizeDir.includes('s')) {
+        let bestDist = SNAP_THRESHOLD;
+        let bestValue = newY + newH;
+        let bestId: string | null = null;
+        for (const other of vOthers) {
+          for (const target of [other.y, other.y + other.height]) {
+            const dist = Math.abs(newY + newH - target);
+            if (dist < bestDist) { bestDist = dist; bestValue = target; bestId = other.id; }
+          }
+        }
+        if (bestId !== null) { newH = Math.max(8, bestValue - newY); newSnapped.add(bestId); }
+      }
+      if (resizeDir.includes('n')) {
+        const bottom = resizeBlockStartY + resizeBlockStartH;
+        let bestDist = SNAP_THRESHOLD;
+        let bestValue = newY;
+        let bestId: string | null = null;
+        for (const other of vOthers) {
+          for (const target of [other.y, other.y + other.height]) {
+            const dist = Math.abs(newY - target);
+            if (dist < bestDist) { bestDist = dist; bestValue = target; bestId = other.id; }
+          }
+        }
+        if (bestId !== null) { newY = bestValue; newH = Math.max(8, bottom - newY); newSnapped.add(bestId); }
+      }
+
       snappingBlockIds = newSnapped;
     }
 
@@ -825,12 +893,20 @@
 
   function snapToGuides(x: number, y: number, w: number, h: number): { x: number; y: number; snappedIds: Set<string> } {
     const guides = getGuideLines();
+    const mL = marginLeft * CM_TO_PTS;
+    const mR = pageWidth - marginRight * CM_TO_PTS;
+    const mT = marginTop * CM_TO_PTS;
+    const mB = pageHeight - marginBottom * CM_TO_PTS;
     const allGuides = [
       ...guides,
       { id: '__page_left',   orientation: 'vertical'   as const, position: 0,          locked: true },
       { id: '__page_right',  orientation: 'vertical'   as const, position: pageWidth,   locked: true },
       { id: '__page_top',    orientation: 'horizontal' as const, position: 0,          locked: true },
       { id: '__page_bottom', orientation: 'horizontal' as const, position: pageHeight,  locked: true },
+      { id: '__margin_left',   orientation: 'vertical'   as const, position: mL, locked: true },
+      { id: '__margin_right',  orientation: 'vertical'   as const, position: mR, locked: true },
+      { id: '__margin_top',    orientation: 'horizontal' as const, position: mT, locked: true },
+      { id: '__margin_bottom', orientation: 'horizontal' as const, position: mB, locked: true },
     ];
     const snapped = new Set<string>();
     let sx = x, sy = y;
@@ -862,10 +938,11 @@
   }
 
   function snapToBlocks(x: number, y: number, w: number, h: number, excludeId: string): { x: number; y: number; snappedIds: Set<string> } {
-    const lineGap = 0;
+    const selectedBlock = template.blocks.find(b => b.id === excludeId);
+    const lineGap = (selectedBlock?.fontSize ?? 10) * 1.4;
     const others = template.blocks.map(b => {
       const bh = isAutoHeight(b.type) ? Math.max(Math.ceil(computeBlockContentHeight(b, previewInvoice)), 8) : b.height;
-      const bLineGap = 0;
+      const bLineGap = (b.fontSize ?? 10) * 1.4;
       return { id: b.id, x: b.x, y: b.y, width: b.width, height: bh, lineGap: bLineGap };
     });
     return snapBlockToOthers({ id: excludeId, x, y, width: w, height: h }, others, SNAP_THRESHOLD, lineGap);
@@ -1014,16 +1091,13 @@
           </div>
           {#if listInvoices.length > 0}
             <div class="template-pdf-row">
-              <select
+              <FormSelect
                 class="template-pdf-select"
-                value={listSelectedInvoiceId[tpl.id!] ?? null}
+                value={listSelectedInvoiceId[tpl.id!] != null ? String(listSelectedInvoiceId[tpl.id!]) : ''}
                 onchange={(e) => { listSelectedInvoiceId = { ...listSelectedInvoiceId, [tpl.id!]: Number((e.target as HTMLSelectElement).value) || null }; }}
-              >
-                <option value="">{t('pdf_builder.rechnung_waehlen')}</option>
-                {#each listInvoices as inv}
-                  <option value={inv.id}>{inv.invoiceNumber}</option>
-                {/each}
-              </select>
+                placeholder={t('pdf_builder.rechnung_waehlen')}
+                items={listInvoices.map(inv => ({ value: String(inv.id), name: inv.invoiceNumber }))}
+              />
               <button
                 class="primary pdf-dl-btn"
                 disabled={!listSelectedInvoiceId[tpl.id!] || listGenerating[tpl.id!]}
@@ -1129,7 +1203,7 @@
     <!-- LEFT: Block Palette -->
     <div class="editor-panel palette-panel">
       <div class="panel-header">{t('pdf_builder.bausteine')}</div>
-      {#each PALETTE_GROUPS as group}
+      {#each getPaletteGroups() as group}
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div class="palette-group-header" onclick={() => toggleGroup(group.key)}>
@@ -1558,35 +1632,35 @@
                     <div>{previewInvoice.seller.name}</div>
                     <div>{previewInvoice.seller.street}</div>
                     <div>{previewInvoice.seller.postalCode} {previewInvoice.seller.city}</div>
-                    {#if previewInvoice.seller.vatId}<div class={isLeft ? '' : 'preview-kv-row'}>{#if isLeft}USt-IdNr.: {previewInvoice.seller.vatId}{:else}<span>USt-IdNr.:</span><span>{previewInvoice.seller.vatId}</span>{/if}</div>{/if}
-                    {#if previewInvoice.seller.taxNumber}<div class={isLeft ? '' : 'preview-kv-row'}>{#if isLeft}Steuernr.: {previewInvoice.seller.taxNumber}{:else}<span>Steuernr.:</span><span>{previewInvoice.seller.taxNumber}</span>{/if}</div>{/if}
+                    {#if previewInvoice.seller.vatId}<div class={isLeft ? '' : 'preview-kv-row'}>{#if isLeft}{t('pdf.ust_idnr')} {previewInvoice.seller.vatId}{:else}<span>{t('pdf.ust_idnr')}</span><span>{previewInvoice.seller.vatId}</span>{/if}</div>{/if}
+                    {#if previewInvoice.seller.taxNumber}<div class={isLeft ? '' : 'preview-kv-row'}>{#if isLeft}{t('pdf.steuernr')} {previewInvoice.seller.taxNumber}{:else}<span>{t('pdf.steuernr')}</span><span>{previewInvoice.seller.taxNumber}</span>{/if}</div>{/if}
                   {:else if block.type === 'buyer-address'}
                     <div>{previewInvoice.buyer.name}</div>
                     <div>{previewInvoice.buyer.street}</div>
                     <div>{previewInvoice.buyer.postalCode} {previewInvoice.buyer.city}</div>
                   {:else if block.type === 'invoice-title'}
-                    <div style="font-size: {(block.fontSize ?? 10) + 4}px; font-weight: {block.fontWeight ?? 'bold'};">Rechnung</div>
+                    <div style="font-size: {(block.fontSize ?? 10) + 4}px; font-weight: {block.fontWeight ?? 'bold'};">{t('pdf.rechnung')}</div>
                   {:else if block.type === 'invoice-number'}
-                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Nr.:</span><span>{previewInvoice.invoiceNumber}</span></div>
+                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.nr')}</span><span>{previewInvoice.invoiceNumber}</span></div>
                   {:else if block.type === 'invoice-date'}
-                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Datum:</span><span>{formatDate(previewInvoice.invoiceDate)}</span></div>
+                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.datum')}</span><span>{formatDate(previewInvoice.invoiceDate)}</span></div>
                   {:else if block.type === 'due-date'}
-                    {#if previewInvoice.dueDate}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Fällig:</span><span>{formatDate(previewInvoice.dueDate)}</span></div>{/if}
+                    {#if previewInvoice.dueDate}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.faellig')}</span><span>{formatDate(previewInvoice.dueDate)}</span></div>{/if}
                   {:else if block.type === 'buyer-reference'}
-                    {#if previewInvoice.buyerReference}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Referenz:</span><span>{previewInvoice.buyerReference}</span></div>{/if}
+                    {#if previewInvoice.buyerReference}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.referenz')}</span><span>{previewInvoice.buyerReference}</span></div>{/if}
                   {:else if block.type === 'invoice-header'}
-                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Nr.:</span><span>{previewInvoice.invoiceNumber}</span></div>
-                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Datum:</span><span>{formatDate(previewInvoice.invoiceDate)}</span></div>
-                    {#if previewInvoice.dueDate}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Fällig:</span><span>{formatDate(previewInvoice.dueDate)}</span></div>{/if}
-                    {#if previewInvoice.buyerReference}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Referenz:</span><span>{previewInvoice.buyerReference}</span></div>{/if}
+                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.nr')}</span><span>{previewInvoice.invoiceNumber}</span></div>
+                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.datum')}</span><span>{formatDate(previewInvoice.invoiceDate)}</span></div>
+                    {#if previewInvoice.dueDate}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.faellig')}</span><span>{formatDate(previewInvoice.dueDate)}</span></div>{/if}
+                    {#if previewInvoice.buyerReference}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.referenz')}</span><span>{previewInvoice.buyerReference}</span></div>{/if}
                   {:else if block.type === 'lines-table'}
                     {@const allCols = [
-                      { key: 'pos', header: 'Pos', ratio: 0.06 },
-                      { key: 'name', header: 'Bezeichnung', ratio: 0.34 },
-                      { key: 'qty', header: 'Menge', ratio: 0.1 },
-                      { key: 'unit', header: 'Einheit', ratio: 0.1 },
-                      { key: 'price', header: 'Einzelpreis', ratio: 0.2 },
-                      { key: 'total', header: 'Netto', ratio: 0.2 },
+                      { key: 'pos', header: t('pdf.pos'), ratio: 0.06 },
+                      { key: 'name', header: t('pdf.bezeichnung'), ratio: 0.34 },
+                      { key: 'qty', header: t('pdf.menge'), ratio: 0.1 },
+                      { key: 'unit', header: t('pdf.einheit'), ratio: 0.1 },
+                      { key: 'price', header: t('pdf.einzelpreis'), ratio: 0.2 },
+                      { key: 'total', header: t('pdf.netto'), ratio: 0.2 },
                     ]}
                     {@const visCols = (block.columns && block.columns.length > 0) ? allCols.filter(c => block.columns!.includes(c.key)) : allCols}
                     {@const totalRatio = visCols.reduce((s, c) => s + c.ratio, 0)}
@@ -1634,18 +1708,18 @@
 
                     </div>
                   {:else if block.type === 'total-net'}
-                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{previewInvoice.kleinunternehmer ? 'Rechnungssumme:' : 'Nettobetrag:'}</span><span>{formatCurrency(previewInvoice.totalNetAmount ?? 0)}</span></div>
+                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{previewInvoice.kleinunternehmer ? t('pdf.rechnungssumme') : t('pdf.nettobetrag')}</span><span>{formatCurrency(previewInvoice.totalNetAmount ?? 0)}</span></div>
                   {:else if block.type === 'total-tax'}
-                    {#if !previewInvoice.kleinunternehmer}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>USt. {previewInvoice.taxRate}%:</span><span>{formatCurrency(previewInvoice.totalTaxAmount ?? 0)}</span></div>{/if}
+                    {#if !previewInvoice.kleinunternehmer}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.ust_prefix')} {previewInvoice.taxRate}%:</span><span>{formatCurrency(previewInvoice.totalTaxAmount ?? 0)}</span></div>{/if}
                   {:else if block.type === 'total-gross'}
-                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{previewInvoice.kleinunternehmer ? 'Rechnungssumme:' : 'Bruttobetrag:'}</span><span>{formatCurrency(previewInvoice.totalGrossAmount ?? 0)}</span></div>
+                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{previewInvoice.kleinunternehmer ? t('pdf.rechnungssumme') : t('pdf.bruttobetrag')}</span><span>{formatCurrency(previewInvoice.totalGrossAmount ?? 0)}</span></div>
                   {:else if block.type === 'totals'}
                     {#if previewInvoice.kleinunternehmer}
-                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'} style="font-weight:700;"><span>Rechnungssumme:</span><span>{formatCurrency(previewInvoice.totalGrossAmount ?? 0)}</span></div>
+                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'} style="font-weight:700;"><span>{t('pdf.rechnungssumme')}</span><span>{formatCurrency(previewInvoice.totalGrossAmount ?? 0)}</span></div>
                     {:else}
-                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Nettobetrag:</span><span>{formatCurrency(previewInvoice.totalNetAmount ?? 0)}</span></div>
-                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>USt. {previewInvoice.taxRate}%:</span><span>{formatCurrency(previewInvoice.totalTaxAmount ?? 0)}</span></div>
-                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'} style="font-size: {(block.fontSize ?? 10) + 1}px; font-weight:700; border-top:1px solid rgba(0,0,0,0.12); padding-top:1px;"><span>Bruttobetrag:</span><span>{formatCurrency(previewInvoice.totalGrossAmount ?? 0)}</span></div>
+                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.nettobetrag')}</span><span>{formatCurrency(previewInvoice.totalNetAmount ?? 0)}</span></div>
+                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.ust_prefix')} {previewInvoice.taxRate}%:</span><span>{formatCurrency(previewInvoice.totalTaxAmount ?? 0)}</span></div>
+                      <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'} style="font-size: {(block.fontSize ?? 10) + 1}px; font-weight:700; border-top:1px solid rgba(0,0,0,0.12); padding-top:1px;"><span>{t('pdf.bruttobetrag')}</span><span>{formatCurrency(previewInvoice.totalGrossAmount ?? 0)}</span></div>
                     {/if}
                   {:else if block.type === 'kleinunternehmer-note'}
                     {#if previewInvoice.kleinunternehmer}
@@ -1654,17 +1728,17 @@
                       <div class="preview-muted">§19-Note (nur aktiv bei Kleinunternehmer)</div>
                     {/if}
                   {:else if block.type === 'payment-means'}
-                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Zahlungsart:</span><span>{getPaymentMeansLabel(previewInvoice.paymentMeansCode)}</span></div>
+                    <div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.zahlungsart')}</span><span>{getPaymentMeansLabel(previewInvoice.paymentMeansCode)}</span></div>
                   {:else if block.type === 'iban-bic'}
                     {#if previewInvoice.iban}<div class={isLeft ? '' : 'preview-kv-row'}>{#if isLeft}IBAN: {formatIban(previewInvoice.iban)}{:else}<span>IBAN:</span><span>{formatIban(previewInvoice.iban)}</span>{/if}</div>{/if}
                     {#if previewInvoice.bic}<div class={isLeft ? '' : 'preview-kv-row'}>{#if isLeft}BIC: {previewInvoice.bic}{:else}<span>BIC:</span><span>{previewInvoice.bic}</span>{/if}</div>{/if}
                   {:else if block.type === 'payment-terms'}
-                    {#if previewInvoice.paymentTerms}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>Zahlungsziel:</span><span>{previewInvoice.paymentTerms}</span></div>{/if}
+                    {#if previewInvoice.paymentTerms}<div class={isLeft ? 'preview-kv-left' : 'preview-kv-row'}><span>{t('pdf.zahlungsziel')}</span><span>{previewInvoice.paymentTerms}</span></div>{/if}
                   {:else if block.type === 'payment-info'}
-                    <div>Zahlungsart: {getPaymentMeansLabel(previewInvoice.paymentMeansCode)}</div>
+                    <div>{t('pdf.zahlungsart')} {getPaymentMeansLabel(previewInvoice.paymentMeansCode)}</div>
                     {#if previewInvoice.iban}<div>IBAN: {formatIban(previewInvoice.iban)}</div>{/if}
                     {#if previewInvoice.bic}<div>BIC: {previewInvoice.bic}</div>{/if}
-                    {#if previewInvoice.paymentTerms}<div>Zahlungsziel: {previewInvoice.paymentTerms}</div>{/if}
+                    {#if previewInvoice.paymentTerms}<div>{t('pdf.zahlungsziel')} {previewInvoice.paymentTerms}</div>{/if}
                   {:else if block.type === 'free-text'}
                     <div style="white-space: pre-wrap; text-align: {block.textAlign ?? 'left'};">{block.content || ''}</div>
                   {/if}
@@ -1744,16 +1818,13 @@
         {#if template.customFonts && template.customFonts.length > 0}
         <div class="prop-section">
           <label for="prop-font-family">{t('pdf_builder.schriftart')}</label>
-          <select
+          <FormSelect
             id="prop-font-family"
             value={selectedBlock.fontFamily ?? ''}
             onchange={(e) => updateBlock(selectedBlock!.id, { fontFamily: (e.target as HTMLSelectElement).value || undefined })}
-          >
-            <option value="">{t('pdf_builder.helvetica_standard')}</option>
-            {#each template.customFonts as cf}
-              <option value={cf.name}>{cf.name}</option>
-            {/each}
-          </select>
+            placeholder={t('pdf_builder.helvetica_standard')}
+            items={template.customFonts.map((cf: any) => ({ value: cf.name, name: cf.name }))}
+          />
         </div>
         {/if}
 
@@ -2095,17 +2166,22 @@
         <div class="panel-header">{t('pdf_builder.seite')}</div>
         <div class="prop-section">
           <label for="prop-page-size">{t('pdf_builder.seite_format')}</label>
-          <select id="prop-page-size" bind:value={template.pageSize}>
-            <option value="a4">A4</option>
-            <option value="letter">Letter</option>
-          </select>
+          <FormSelect
+            id="prop-page-size"
+            bind:value={template.pageSize}
+            items={[{ value: 'a4', name: 'A4' }, { value: 'letter', name: 'Letter' }]}
+          />
         </div>
         <div class="prop-section">
           <label for="prop-page-orient">{t('pdf_builder.seite_ausrichtung')}</label>
-          <select id="prop-page-orient" bind:value={template.orientation}>
-            <option value="portrait">{t('pdf_builder.hochformat')}</option>
-            <option value="landscape">{t('pdf_builder.querformat')}</option>
-          </select>
+          <FormSelect
+            id="prop-page-orient"
+            bind:value={template.orientation}
+            items={[
+              { value: 'portrait', name: t('pdf_builder.hochformat') },
+              { value: 'landscape', name: t('pdf_builder.querformat') },
+            ]}
+          />
         </div>
         <div class="props-empty" style="margin-top: 0.75rem;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -2120,11 +2196,11 @@
       <div class="panel-header">{t('pdf_builder.vorschau_panel')}</div>
       <div class="preview-section">
         <label for="preview-invoice">{t('pdf_builder.rechnung_label')}</label>
-        <select id="preview-invoice" bind:value={selectedInvoiceId}>
-          {#each invoices as inv}
-            <option value={inv.id}>{inv.invoiceNumber} — {inv.buyerName}</option>
-          {/each}
-        </select>
+        <FormSelect
+          id="preview-invoice"
+          bind:value={selectedInvoiceId}
+          items={invoices.map((inv: any) => ({ value: String(inv.id), name: `${inv.invoiceNumber} — ${inv.buyerName}` }))}
+        />
         {#if !selectedInvoiceId}
           <p class="preview-hint">{t('pdf_builder.erstelle_rechnung_zuerst')}</p>
         {/if}
@@ -2271,7 +2347,11 @@
     padding: 0;
     overflow: hidden;
     transition: all 0.2s var(--ease-out);
-    animation: slideUp 0.3s var(--ease-out) both;
+    /* Use backwards (not both) so no transform is retained after animation.
+       With "both", translateY(0) from the keyframe's "to" state persists and
+       creates a new containing block for position:fixed children — this clips
+       the FormSelect dropdown against overflow:hidden on this card. */
+    animation: slideUp 0.3s var(--ease-out) backwards;
   }
 
   .template-card:hover {
@@ -2350,11 +2430,10 @@
     background: var(--surface-alt);
   }
 
-  .template-pdf-select {
+  /* .template-pdf-select is forwarded to the FormSelect wrapper div via the class prop */
+  .template-pdf-row :global(.template-pdf-select) {
     flex: 1;
     width: auto;
-    font-size: 0.8125rem;
-    padding: 0.35rem 0.55rem;
   }
 
   .pdf-dl-btn {
@@ -3508,9 +3587,10 @@
     margin-top: 0.35rem;
   }
 
-  .preview-section select {
-    font-size: 0.75rem;
-    padding: 0.35rem 2rem 0.35rem 0.5rem;
+  /* FormSelect renders a custom button trigger — target the trigger class to style it */
+  :global(.preview-section .form-select-trigger) {
+    font-size: 0.75rem !important;
+    padding: 0.35rem 2rem 0.35rem 0.5rem !important;
     margin-top: 0.2rem;
     text-overflow: ellipsis;
   }

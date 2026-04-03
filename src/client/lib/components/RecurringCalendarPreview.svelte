@@ -1,5 +1,6 @@
 <script lang="ts">
   import { t } from '../i18n.js';
+  import { getSettings } from '../settingsStore.svelte.js';
 
   let {
     dates = [],
@@ -17,12 +18,12 @@
 
   let dateSet = $derived(new Set(dates));
 
-  let monthGrids = $derived(buildMonthGrids(months, offset));
+  let monthGrids = $derived(buildMonthGrids(months, offset, getSettings().locale));
 
   let firstMonthLabel = $derived(monthGrids[0]?.monthName ?? '');
   let lastMonthLabel = $derived(monthGrids[monthGrids.length - 1]?.monthName ?? '');
 
-  function buildMonthGrids(count: number, off: number) {
+  function buildMonthGrids(count: number, off: number, locale: string) {
     const grids: Array<{
       year: number;
       month: number;
@@ -43,7 +44,7 @@
       for (let day = 1; day <= lastDate; day++) cells.push(day);
       while (cells.length % 7 !== 0) cells.push(null);
 
-      const monthName = d.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+      const monthName = d.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
       grids.push({ year: y, month: m, monthName, cells });
     }
     return grids;
@@ -59,7 +60,16 @@
     return day === now.getDate() && month === now.getMonth() && year === now.getFullYear();
   }
 
-  const DAY_HEADERS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+  let dayHeaders = $derived((() => {
+    const locale = getSettings().locale;
+    const headers: string[] = [];
+    // Generate Mon–Sun starting from a known Monday (2024-01-01 was a Monday)
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(2024, 0, 1 + i);
+      headers.push(d.toLocaleDateString(locale, { weekday: 'short' }));
+    }
+    return headers;
+  })());
 </script>
 
 <div class="calendar-nav">
@@ -81,7 +91,7 @@
     <div class="month-block">
       <div class="month-header">{grid.monthName}</div>
       <div class="day-grid">
-        {#each DAY_HEADERS as hdr}
+        {#each dayHeaders as hdr}
           <div class="day-label">{hdr}</div>
         {/each}
         {#each grid.cells as cell}

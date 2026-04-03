@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import AppBadge from './AppBadge.svelte';
   import { INVOICE_TYPE_CODES, CURRENCY_CODES, CURRENCY_SYMBOLS, VAT_CATEGORY_CODES } from '../../../shared/constants/codeLists';
   import { invoiceNumberTemplateApi } from '../api/templateApi';
   import { t } from '../i18n.js';
-  import DateInput from './DateInput.svelte';
+  import DatePicker from './DatePicker.svelte';
+  import FormSelect from './FormSelect.svelte';
 
   let { invoice = $bindable(), selectedInvNumTemplateId = $bindable(''), onchange = () => {} }: {
     invoice: any;
@@ -89,7 +91,7 @@
     </label>
     {#if invoice.kleinunternehmer}
       <div class="kleinunternehmer-notice">
-        <span class="header-badge">§19 UStG</span>
+        <AppBadge variant="amber-solid">§19 UStG</AppBadge>
         {t('code.kleinunternehmer_note')}
       </div>
     {/if}
@@ -101,12 +103,13 @@
       <input id="invoiceNumber" bind:value={invoice.invoiceNumber} placeholder="RE-2024-001" />
       {#if invNumTemplates.length > 0}
         <div class="invnum-template-row">
-          <select class="template-select" bind:value={selectedInvNumTemplateId} onchange={previewFromTemplate}>
-            <option value="">{t('header.nummernvorlage_placeholder')}</option>
-            {#each invNumTemplates as tpl}
-              <option value={String(tpl.id)}>{tpl.name} ({t('code.next')}: {tpl.prefix}{String(tpl.nextNumber).padStart(tpl.digits, '0')})</option>
-            {/each}
-          </select>
+          <FormSelect
+            class="template-select"
+            bind:value={selectedInvNumTemplateId}
+            onchange={previewFromTemplate}
+            placeholder={t('header.nummernvorlage_placeholder')}
+            items={invNumTemplates.map(tpl => ({ value: String(tpl.id), name: `${tpl.name} (${t('code.next')}: ${tpl.prefix}${String(tpl.nextNumber).padStart(tpl.digits, '0')})` }))}
+          />
         </div>
         {#if selectedInvNumTemplateId && invoice.invoiceNumber}
           <div class="invnum-preview-hint">{t('header.wird_beim_speichern_vergeben')}</div>
@@ -115,11 +118,11 @@
     </div>
     <div class="form-group">
       <label for="invoiceDate">{t('header.rechnungsdatum')} <span class="required">*</span></label>
-      <DateInput id="invoiceDate" bind:value={invoice.invoiceDate} />
+      <DatePicker id="invoiceDate" bind:value={invoice.invoiceDate} />
     </div>
     <div class="form-group">
       <label for="dueDate">{t('header.faelligkeitsdatum')}</label>
-      <DateInput id="dueDate" bind:value={invoice.dueDate} />
+      <DatePicker id="dueDate" bind:value={invoice.dueDate} />
     </div>
     <div class="form-group">
       <label for="buyerReference">{t('header.kaeuferreferenz')}</label>
@@ -130,19 +133,19 @@
   <div class="form-row">
     <div class="form-group">
       <label for="invoiceTypeCode">{t('header.rechnungsart')} <span class="required">*</span></label>
-      <select id="invoiceTypeCode" bind:value={invoice.invoiceTypeCode}>
-        {#each Object.entries(INVOICE_TYPE_CODES) as [code]}
-          <option value={code}>{code} — {t(('code.invoice_type.' + code) as any)}</option>
-        {/each}
-      </select>
+      <FormSelect
+        id="invoiceTypeCode"
+        bind:value={invoice.invoiceTypeCode}
+        items={Object.entries(INVOICE_TYPE_CODES).map(([code]) => ({ value: code, name: `${code} — ${t(('code.invoice_type.' + code) as any)}` }))}
+      />
     </div>
     <div class="form-group">
       <label for="currencyCode">{t('header.waehrung')} <span class="required">*</span></label>
-      <select id="currencyCode" bind:value={invoice.currencyCode}>
-        {#each Object.entries(CURRENCY_CODES) as [code]}
-          <option value={code}>{CURRENCY_SYMBOLS[code] ?? code} — {t(('code.currency.' + code) as any)}</option>
-        {/each}
-      </select>
+      <FormSelect
+        id="currencyCode"
+        bind:value={invoice.currencyCode}
+        items={Object.entries(CURRENCY_CODES).map(([code]) => ({ value: code, name: `${CURRENCY_SYMBOLS[code] ?? code} — ${t(('code.currency.' + code) as any)}` }))}
+      />
     </div>
   </div>
 
@@ -150,11 +153,11 @@
     <div class="form-row">
       <div class="form-group">
         <label for="taxCategoryCode">{t('header.ust_kategorie')} <span class="required">*</span></label>
-        <select id="taxCategoryCode" bind:value={invoice.taxCategoryCode}>
-          {#each Object.entries(VAT_CATEGORY_CODES) as [code]}
-            <option value={code}>{code} — {t(('code.vat.' + code) as any)}</option>
-          {/each}
-        </select>
+        <FormSelect
+          id="taxCategoryCode"
+          bind:value={invoice.taxCategoryCode}
+          items={Object.entries(VAT_CATEGORY_CODES).map(([code]) => ({ value: code, name: `${code} — ${t(('code.vat.' + code) as any)}` }))}
+        />
       </div>
       <div class="form-group">
         <label for="taxRate">{t('header.ust_satz')} <span class="required">*</span></label>
@@ -176,7 +179,7 @@
       <div class="form-row additional-row">
         <div class="form-group">
           <label for="deliveryDate">{t('header.leistungsdatum')}</label>
-          <DateInput id="deliveryDate" bind:value={invoice.deliveryDate} />
+          <DatePicker id="deliveryDate" bind:value={invoice.deliveryDate} />
         </div>
         <div class="form-group">
           <label for="orderReference">{t('header.bestellnummer')}</label>
@@ -272,7 +275,8 @@
     margin-top: 0.5rem;
   }
 
-  .template-select {
+  /* .template-select is forwarded to the FormSelect wrapper div via the class prop */
+  .invnum-template-row :global(.template-select) {
     flex: 1;
     min-width: 0;
   }
@@ -287,19 +291,6 @@
   .required {
     color: var(--danger);
     font-weight: 700;
-  }
-
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.15rem 0.5rem;
-    background: var(--amber);
-    color: white;
-    border-radius: 4px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    white-space: nowrap;
   }
 
   .additional-section {

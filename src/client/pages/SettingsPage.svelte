@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { t, translations } from '../lib/i18n.js';
+  import FormSelect from '../lib/components/FormSelect.svelte';
   import { loadSettings, saveSettings } from '../lib/settingsStore.svelte.js';
   import type { AppSettingsDto } from '$shared/types';
   import type { Locale } from '../lib/i18n.js';
@@ -86,11 +87,11 @@
             <span class="settings-label-text">{t('settings.sprache')}</span>
           </div>
           <div class="settings-control">
-            <select bind:value={form.locale} class="settings-select">
-              {#each LOCALE_OPTIONS as opt}
-                <option value={opt.value}>{opt.label}</option>
-              {/each}
-            </select>
+            <FormSelect
+              bind:value={form.locale}
+              class="settings-select"
+              items={LOCALE_OPTIONS.map(opt => ({ value: opt.value, name: opt.label }))}
+            />
           </div>
         </div>
 
@@ -101,11 +102,11 @@
             <span class="settings-label-text">{t('settings.datumsformat')}</span>
           </div>
           <div class="settings-control">
-            <select bind:value={form.dateFormat} class="settings-select">
-              {#each DATE_OPTIONS as opt}
-                <option value={opt.value}>{opt.label}</option>
-              {/each}
-            </select>
+            <FormSelect
+              bind:value={form.dateFormat}
+              class="settings-select"
+              items={DATE_OPTIONS.map(opt => ({ value: opt.value, name: opt.label }))}
+            />
           </div>
         </div>
 
@@ -116,11 +117,11 @@
             <span class="settings-label-text">{t('settings.zahlenformat')}</span>
           </div>
           <div class="settings-control">
-            <select bind:value={form.numberFormat} class="settings-select">
-              {#each NUMBER_OPTIONS as opt}
-                <option value={opt.value}>{opt.label}</option>
-              {/each}
-            </select>
+            <FormSelect
+              bind:value={form.numberFormat}
+              class="settings-select"
+              items={NUMBER_OPTIONS.map(opt => ({ value: opt.value, name: opt.label }))}
+            />
           </div>
         </div>
       </div>
@@ -227,32 +228,9 @@
     width: 280px;
   }
 
-  .settings-select {
+  /* .settings-select is forwarded to the FormSelect wrapper div via the class prop */
+  .settings-control :global(.settings-select) {
     width: 100%;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    font-size: 0.8125rem;
-    font-family: var(--font-body), sans-serif;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--bg);
-    color: var(--text);
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
-
-  .settings-select:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .settings-select:hover:not(:disabled) {
-    border-color: #c8c5c0;
-  }
-
-  .settings-select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(166, 47, 36, 0.12);
   }
 
   .settings-footer {

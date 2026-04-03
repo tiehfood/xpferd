@@ -5,6 +5,7 @@
   import { formatIban, fmtCurrency } from '../../shared/constants/format';
   import { getSettings } from '../lib/settingsStore.svelte.js';
   import { t } from '../lib/i18n.js';
+  import FormSelect from '../lib/components/FormSelect.svelte';
 
   let activeTab: 'invoice-numbers' | 'payments' | 'line-items' | 'invoices' = $state('invoice-numbers');
   let loading = $state(true);
@@ -62,8 +63,8 @@
     editingInvNum = { name: '', prefix: 'RE-', digits: 4, nextNumber: 1 };
     editError = '';
   }
-  function startEditInvNum(t: any) {
-    editingInvNum = { ...t };
+  function startEditInvNum(tpl: any) {
+    editingInvNum = { ...tpl };
     editError = '';
   }
   async function saveInvNum() {
@@ -88,13 +89,13 @@
     editingPay = { name: '', paymentMeansCode: '58', iban: '', bic: '', paymentTerms: '' };
     editError = '';
   }
-  function startEditPay(t: any) {
+  function startEditPay(tpl: any) {
     editingPay = {
-      ...t,
-      paymentMeansCode: t.paymentMeansCode || '58',
-      iban: formatIban(t.iban ?? ''),
-      bic: t.bic ?? '',
-      paymentTerms: t.paymentTerms ?? '',
+      ...tpl,
+      paymentMeansCode: tpl.paymentMeansCode || '58',
+      iban: formatIban(tpl.iban ?? ''),
+      bic: tpl.bic ?? '',
+      paymentTerms: tpl.paymentTerms ?? '',
     };
     editError = '';
   }
@@ -120,8 +121,8 @@
     editingLine = { name: '', unitCode: 'C62', netPrice: 0, vatCategoryCode: 'S', vatRate: 19 };
     editError = '';
   }
-  function startEditLine(t: any) {
-    editingLine = { ...t };
+  function startEditLine(tpl: any) {
+    editingLine = { ...tpl };
     editError = '';
   }
   async function saveLine() {
@@ -147,9 +148,9 @@
     try { await invoiceTemplateApi.delete(id); await load(); } catch (e: any) { error = e.message; }
   }
 
-  function getInvTplSummary(t: any): { buyer: string; lines: number; currency: string; total: number | null } {
+  function getInvTplSummary(tpl: any): { buyer: string; lines: number; currency: string; total: number | null } {
     try {
-      const d = JSON.parse(t.data);
+      const d = JSON.parse(tpl.data);
       // Use stored total if available, otherwise compute from lines
       let total: number | null = null;
       if (typeof d.totalGrossAmount === 'number') {
@@ -453,11 +454,11 @@
         <div class="form-row">
           <div class="form-group">
             <label for="pay-means">{t('templates.pay_zahlungsart')} <span class="required">*</span></label>
-            <select id="pay-means" bind:value={editingPay.paymentMeansCode}>
-              {#each Object.entries(PAYMENT_MEANS_CODES) as [code]}
-                <option value={code}>{code} — {t(('code.payment.' + code) as any)}</option>
-              {/each}
-            </select>
+            <FormSelect
+              id="pay-means"
+              bind:value={editingPay.paymentMeansCode}
+              items={Object.entries(PAYMENT_MEANS_CODES).map(([code]) => ({ value: code, name: `${code} — ${t(('code.payment.' + code) as any)}` }))}
+            />
           </div>
           <div class="form-group">
             <label for="pay-bic">{t('templates.pay_bic')}</label>
@@ -503,11 +504,11 @@
         <div class="form-row">
           <div class="form-group">
             <label for="line-unit">{t('templates.line_einheit')} <span class="required">*</span></label>
-            <select id="line-unit" bind:value={editingLine.unitCode}>
-              {#each Object.entries(UNIT_CODES) as [code]}
-                <option value={code}>{t(('code.unit.' + code) as any)}</option>
-              {/each}
-            </select>
+            <FormSelect
+              id="line-unit"
+              bind:value={editingLine.unitCode}
+              items={Object.entries(UNIT_CODES).map(([code]) => ({ value: code, name: t(('code.unit.' + code) as any) }))}
+            />
           </div>
           <div class="form-group">
             <label for="line-price">{t('templates.line_einzelpreis')} <span class="required">*</span></label>
@@ -515,11 +516,11 @@
           </div>
           <div class="form-group">
             <label for="line-vat">{t('templates.line_ust_kategorie')}</label>
-            <select id="line-vat" bind:value={editingLine.vatCategoryCode}>
-              {#each Object.entries(VAT_CATEGORY_CODES) as [code]}
-                <option value={code}>{code} — {t(('code.vat.' + code) as any)}</option>
-              {/each}
-            </select>
+            <FormSelect
+              id="line-vat"
+              bind:value={editingLine.vatCategoryCode}
+              items={Object.entries(VAT_CATEGORY_CODES).map(([code]) => ({ value: code, name: `${code} — ${t(('code.vat.' + code) as any)}` }))}
+            />
           </div>
           <div class="form-group">
             <label for="line-vatrate">{t('templates.line_ust_satz')}</label>

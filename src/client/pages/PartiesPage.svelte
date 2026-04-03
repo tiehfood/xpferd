@@ -4,6 +4,7 @@
   import type { FieldErrors } from '../lib/api/partyApi';
   import { COUNTRY_CODES } from '$shared/constants';
   import { t } from '../lib/i18n.js';
+  import FormSelect from '../lib/components/FormSelect.svelte';
 
   let partyType: 'seller' | 'buyer' = $state('seller');
   let parties: any[] = $state([]);
@@ -244,11 +245,11 @@
           </div>
           <div class="form-group">
             <label for="edit-country">{t('parties.land')} <span class="required">*</span></label>
-            <select id="edit-country" bind:value={editing.countryCode}>
-              {#each Object.entries(COUNTRY_CODES) as [code]}
-                <option value={code}>{code} — {t(('code.country.' + code) as any)}</option>
-              {/each}
-            </select>
+            <FormSelect
+              id="edit-country"
+              bind:value={editing.countryCode}
+              items={Object.entries(COUNTRY_CODES).map(([code]) => ({ value: code, name: `${code} — ${t(('code.country.' + code) as any)}` }))}
+            />
           </div>
         </div>
 

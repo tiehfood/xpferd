@@ -1,12 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { push } from 'svelte-spa-router';
+  import AppBadge from '../lib/components/AppBadge.svelte';
+  import BadgeDot from '../lib/components/BadgeDot.svelte';
   import { t } from '../lib/i18n.js';
+  import { fmtDate } from '../../shared/constants/format.js';
+  import { getSettings } from '../lib/settingsStore.svelte.js';
   import { recurringInvoiceApi } from '../lib/api/recurringInvoiceApi.js';
   import { invoiceTemplateApi, invoiceNumberTemplateApi } from '../lib/api/templateApi.js';
   import { describeSchedule, computeOccurrences, addDays } from '../../shared/utils/recurringDates.js';
   import RecurringCalendarPreview from '../lib/components/RecurringCalendarPreview.svelte';
-  import DateInput from '../lib/components/DateInput.svelte';
+  import DatePicker from '../lib/components/DatePicker.svelte';
+  import FormSelect from '../lib/components/FormSelect.svelte';
 
   // ── Page state ────────────────────────────────────────────────────────────
   let rules: any[] = $state([]);
@@ -273,9 +278,7 @@
 
   function formatDate(dateStr: string | undefined): string {
     if (!dateStr) return '—';
-    const parts = dateStr.slice(0, 10).split('-');
-    if (parts.length < 3) return dateStr;
-    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    return fmtDate(dateStr, getSettings().dateFormat);
   }
 
   function getScheduleDescription(rule: any): string {
@@ -419,14 +422,14 @@
           <div class="rule-card-title-group">
             <span class="rule-name">{rule.name}</span>
             {#if rule.active}
-              <span class="badge badge-active">
-                <span class="badge-dot"></span>
+              <AppBadge variant="success" rounded>
+                <BadgeDot color="success" />
                 {t('recurring.aktiv')}
-              </span>
+              </AppBadge>
             {:else}
-              <span class="badge badge-paused">
+              <AppBadge variant="neutral" rounded>
                 {t('recurring.pausiert')}
-              </span>
+              </AppBadge>
             {/if}
           </div>
           <div class="rule-meta">
@@ -527,34 +530,38 @@
           <!-- Invoice template -->
           <div class="form-group">
             <label for="rule-template">{t('recurring.vorlage')}</label>
-            <select id="rule-template" bind:value={editForm.invoiceTemplateId}
-                    onchange={() => autoSelectNumberTemplate(Number(editForm.invoiceTemplateId))}>
-              {#each invoiceTemplates as tpl}
-                <option value={tpl.id}>{tpl.name}</option>
-              {/each}
-            </select>
+            <FormSelect
+              id="rule-template"
+              bind:value={editForm.invoiceTemplateId}
+              onchange={() => autoSelectNumberTemplate(Number(editForm.invoiceTemplateId))}
+              items={invoiceTemplates.map(tpl => ({ value: String(tpl.id), name: tpl.name }))}
+            />
           </div>
 
           <!-- Number template -->
           <div class="form-group">
             <label for="rule-numtpl">{t('recurring.nummernvorlage')}</label>
-            <select id="rule-numtpl" bind:value={editForm.invoiceNumberTemplateId}>
-              <option value={undefined}>{t('recurring.keine_nummernvorlage')}</option>
-              {#each numberTemplates as ntpl}
-                <option value={ntpl.id}>{ntpl.name}</option>
-              {/each}
-            </select>
+            <FormSelect
+              id="rule-numtpl"
+              bind:value={editForm.invoiceNumberTemplateId}
+              placeholder={t('recurring.keine_nummernvorlage')}
+              items={numberTemplates.map(ntpl => ({ value: String(ntpl.id), name: ntpl.name }))}
+            />
           </div>
 
           <!-- Frequency -->
           <div class="form-group">
             <label for="rule-frequency">{t('recurring.haeufigkeit')}</label>
-            <select id="rule-frequency" bind:value={editForm.frequency}>
-              <option value="weekly">{t('recurring.woechentlich')}</option>
-              <option value="biweekly">{t('recurring.zweiwoechentlich')}</option>
-              <option value="monthly">{t('recurring.monatlich')}</option>
-              <option value="quarterly">{t('recurring.vierteljaehrlich')}</option>
-            </select>
+            <FormSelect
+              id="rule-frequency"
+              bind:value={editForm.frequency}
+              items={[
+                { value: 'weekly', name: t('recurring.woechentlich') },
+                { value: 'biweekly', name: t('recurring.zweiwoechentlich') },
+                { value: 'monthly', name: t('recurring.monatlich') },
+                { value: 'quarterly', name: t('recurring.vierteljaehrlich') },
+              ]}
+            />
           </div>
 
           <!-- Timing: weekly/biweekly → weekday buttons -->
@@ -621,7 +628,7 @@
           <!-- Start date -->
           <div class="form-group">
             <label for="rule-start">{t('recurring.startdatum')}</label>
-            <DateInput id="rule-start" bind:value={editForm.startDate} />
+            <DatePicker id="rule-start" bind:value={editForm.startDate} />
           </div>
 
           <!-- End date (optional) -->
@@ -632,7 +639,7 @@
             </label>
             {#if editForm.hasEndDate}
               <div style="margin-top: 0.35rem;">
-                <DateInput id="rule-end" bind:value={editForm.endDate} />
+                <DatePicker id="rule-end" bind:value={editForm.endDate} />
               </div>
             {/if}
           </div>
@@ -876,24 +883,6 @@
     font-weight: 600;
     color: var(--text);
     letter-spacing: -0.01em;
-  }
-
-  .badge-active {
-    background: #dcfce7;
-    color: #166534;
-  }
-
-  .badge-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #16a34a;
-  }
-
-  .badge-paused {
-    background: var(--bg);
-    color: var(--text-muted);
-    border: 1px solid var(--border);
   }
 
   .rule-meta {
@@ -1160,12 +1149,6 @@
     letter-spacing: normal;
   }
 
-  .radio-option input[type="radio"] {
-    width: auto;
-    margin: 0;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
 
   .radio-option span {
     display: flex;

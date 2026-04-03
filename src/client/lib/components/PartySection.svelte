@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { partyApi } from '../api/partyApi';
   import { t } from '../i18n.js';
+  import FormSelect from './FormSelect.svelte';
 
   let { title, party = $bindable(), isSeller }: { title: string; party: any; isSeller: boolean } = $props();
 
@@ -104,12 +105,13 @@
   {:else}
     <div class="party-selector">
       <label for="{title}-select">{title} {t('party.auswaehlen').replace('{title}', '')} <span class="required">*</span></label>
-      <select id="{title}-select" bind:value={selectedPartyId} onchange={handlePartySelect}>
-        <option value="">{t('party.bitte_waehlen')}</option>
-        {#each savedParties as sp}
-          <option value={String(sp.id)}>{sp.name} ({sp.city})</option>
-        {/each}
-      </select>
+      <FormSelect
+        id="{title}-select"
+        bind:value={selectedPartyId}
+        onchange={handlePartySelect}
+        placeholder={t('party.bitte_waehlen')}
+        items={savedParties.map(sp => ({ value: String(sp.id), name: `${sp.name} (${sp.city})` }))}
+      />
     </div>
 
     {#if selectedParty}

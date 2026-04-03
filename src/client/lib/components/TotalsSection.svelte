@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AppBadge from './AppBadge.svelte';
   import { fmtCurrency } from '$shared/constants/format';
   import { getSettings } from '../settingsStore.svelte';
   import { t } from '../i18n.js';
@@ -22,7 +23,7 @@
     {:else}
       <div class="total-row exempt-row">
         <span class="total-label">
-          <span class="badge-sm">§19</span>
+          <AppBadge variant="amber-solid" class="badge-sm">§19</AppBadge>
           {t('totals.umsatzsteuer_entfaellt')}
         </span>
         <span class="total-value mono">{fmtCurrency(0, invoice.currencyCode, getSettings().numberFormat)}</span>
@@ -91,19 +92,6 @@
     font-weight: 400;
   }
 
-  .badge-sm {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.1rem 0.35rem;
-    background: var(--amber);
-    color: white;
-    border-radius: 4px;
-    font-size: 0.6rem;
-    font-weight: 700;
-    font-style: normal;
-    letter-spacing: 0.02em;
-  }
-
   .grand-total {
     border-top: 2px solid var(--text);
     margin-top: 0.5rem;
@@ -149,5 +137,11 @@
   .amount-due .total-value {
     font-weight: 700;
     color: var(--primary);
+  }
+
+  /* Compact size variant for the §19 badge — legitimate size override, not a global style */
+  :global(.badge-sm) {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
   }
 </style>

@@ -4,6 +4,7 @@
   import { paymentTemplateApi } from '../api/templateApi';
   import { formatIban } from '$shared/constants/format';
   import { t } from '../i18n.js';
+  import FormSelect from './FormSelect.svelte';
 
   let { invoice = $bindable() }: { invoice: any } = $props();
 
@@ -57,23 +58,24 @@
   {#if payTemplates.length > 0}
     <div class="template-selector">
       <label for="pay-template">{t('payment.zahlungsvorlage')}</label>
-      <select id="pay-template" bind:value={selectedTemplateId} onchange={handleTemplateSelect}>
-        <option value="">{t('payment.manuell')}</option>
-        {#each payTemplates as tpl}
-          <option value={String(tpl.id)}>{tpl.name}</option>
-        {/each}
-      </select>
+      <FormSelect
+        id="pay-template"
+        bind:value={selectedTemplateId}
+        onchange={handleTemplateSelect}
+        placeholder={t('payment.manuell')}
+        items={payTemplates.map(tpl => ({ value: String(tpl.id), name: tpl.name }))}
+      />
     </div>
   {/if}
 
   <div class="form-row">
     <div class="form-group">
       <label for="paymentMeansCode">{t('payment.zahlungsart')} <span class="required">*</span></label>
-      <select id="paymentMeansCode" bind:value={invoice.paymentMeansCode}>
-        {#each Object.entries(PAYMENT_MEANS_CODES) as [code]}
-          <option value={code}>{code} — {t(('code.payment.' + code) as any)}</option>
-        {/each}
-      </select>
+      <FormSelect
+        id="paymentMeansCode"
+        bind:value={invoice.paymentMeansCode}
+        items={Object.entries(PAYMENT_MEANS_CODES).map(([code]) => ({ value: code, name: `${code} — ${t(('code.payment.' + code) as any)}` }))}
+      />
     </div>
     <div class="form-group">
       <label for="iban">IBAN</label>

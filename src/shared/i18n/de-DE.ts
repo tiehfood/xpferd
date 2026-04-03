@@ -452,6 +452,27 @@ const deDe = {
   'pdf_builder.pdf_oeffnen': 'PDF öffnen',
   'pdf_builder.leinwand_label': 'PDF-Leinwand',
 
+  // ── PDF document labels (rendered in actual PDF output) ──────────────────
+  'pdf.rechnung': 'Rechnung',
+  'pdf.nr': 'Nr.:',
+  'pdf.datum': 'Datum:',
+  'pdf.faellig': 'Fällig:',
+  'pdf.referenz': 'Referenz:',
+  'pdf.ust_idnr': 'USt-IdNr.:',
+  'pdf.steuernr': 'Steuernr.:',
+  'pdf.nettobetrag': 'Nettobetrag:',
+  'pdf.bruttobetrag': 'Bruttobetrag:',
+  'pdf.rechnungssumme': 'Rechnungssumme:',
+  'pdf.ust_prefix': 'USt.',
+  'pdf.zahlungsart': 'Zahlungsart:',
+  'pdf.zahlungsziel': 'Zahlungsziel:',
+  'pdf.pos': 'Pos',
+  'pdf.bezeichnung': 'Bezeichnung',
+  'pdf.menge': 'Menge',
+  'pdf.einheit': 'Einheit',
+  'pdf.einzelpreis': 'Einzelpreis',
+  'pdf.netto': 'Netto',
+
   // ── Code Lists (dropdowns) ──────────────────────────────────────────────
   'code.invoice_type.380': 'Rechnung',
   'code.invoice_type.381': 'Gutschrift',

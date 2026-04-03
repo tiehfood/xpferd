@@ -4,6 +4,7 @@ import type { PdfTemplateDto, PdfBlockDto, InvoiceDto } from '../../shared/types
 import { UNIT_CODES, PAYMENT_MEANS_CODES, KLEINUNTERNEHMER_NOTE } from '../../shared/constants/index.js';
 import { formatIban, fmtDate } from '../../shared/constants/format.js';
 import { AppSettingsService } from './AppSettingsService.js';
+import { translations, type Locale, type TranslationKeys } from '../../shared/i18n/index.js';
 export { computeBlockContentHeight } from '../../shared/utils/blockMetrics.js';
 import { SvgToPdfRenderer } from './SvgToPdfRenderer.js';
 
@@ -70,6 +71,12 @@ export function measureHelveticaWidth(text: string, fontSize: number, font: Stan
 export class PdfRenderService {
   private get settingsService() {
     return new AppSettingsService();
+  }
+
+  /** Server-side translation — reads locale from app settings */
+  private tPdf(key: TranslationKeys): string {
+    const locale = (this.settingsService.get().locale || 'de-DE') as Locale;
+    return (translations[locale] ?? translations['de-DE'])[key] ?? key;
   }
 
   async render(template: PdfTemplateDto, invoice: InvoiceDto): Promise<Uint8Array> {
@@ -187,42 +194,42 @@ export class PdfRenderService {
         this.drawLineElement(page, block, pdfY);
         break;
       case 'invoice-title':
-        this.drawSimpleText(page, block, 'Rechnung', pdfY, fontSize + 4, color, font);
+        this.drawSimpleText(page, block, this.tPdf('pdf.rechnung'), pdfY, fontSize + 4, color, font);
         break;
       case 'invoice-number':
-        this.drawLV(page, block, 'Nr.:', invoice.invoiceNumber, pdfY, fontSize, color, font);
+        this.drawLV(page, block, this.tPdf('pdf.nr'), invoice.invoiceNumber, pdfY, fontSize, color, font);
         break;
       case 'invoice-date':
-        this.drawLV(page, block, 'Datum:', this.formatDate(invoice.invoiceDate), pdfY, fontSize, color, font);
+        this.drawLV(page, block, this.tPdf('pdf.datum'), this.formatDate(invoice.invoiceDate), pdfY, fontSize, color, font);
         break;
       case 'due-date':
         if (invoice.dueDate) {
-          this.drawLV(page, block, 'Fällig:', this.formatDate(invoice.dueDate), pdfY, fontSize, color, font);
+          this.drawLV(page, block, this.tPdf('pdf.faellig'), this.formatDate(invoice.dueDate), pdfY, fontSize, color, font);
         }
         break;
       case 'buyer-reference':
         if (invoice.buyerReference) {
-          this.drawLV(page, block, 'Referenz:', invoice.buyerReference, pdfY, fontSize, color, font);
+          this.drawLV(page, block, this.tPdf('pdf.referenz'), invoice.buyerReference, pdfY, fontSize, color, font);
         }
         break;
       case 'total-net':
         this.drawLV(page, block,
-          invoice.kleinunternehmer ? 'Rechnungssumme:' : 'Nettobetrag:',
+          invoice.kleinunternehmer ? this.tPdf('pdf.rechnungssumme') : this.tPdf('pdf.nettobetrag'),
           this.formatCurrency(invoice.totalNetAmount ?? 0), pdfY, fontSize, color, font);
         break;
       case 'total-tax':
         if (!invoice.kleinunternehmer) {
-          this.drawLV(page, block, `USt. ${invoice.taxRate}%:`, this.formatCurrency(invoice.totalTaxAmount ?? 0), pdfY, fontSize, color, font);
+          this.drawLV(page, block, `${this.tPdf('pdf.ust_prefix')} ${invoice.taxRate}%:`, this.formatCurrency(invoice.totalTaxAmount ?? 0), pdfY, fontSize, color, font);
         }
         break;
       case 'total-gross':
         this.drawLV(page, block,
-          invoice.kleinunternehmer ? 'Rechnungssumme:' : 'Bruttobetrag:',
+          invoice.kleinunternehmer ? this.tPdf('pdf.rechnungssumme') : this.tPdf('pdf.bruttobetrag'),
           this.formatCurrency(invoice.totalGrossAmount ?? 0), pdfY, fontSize, color, font);
         break;
       case 'payment-means': {
         const meansLabel = PAYMENT_MEANS_CODES[invoice.paymentMeansCode] ?? invoice.paymentMeansCode;
-        this.drawLV(page, block, 'Zahlungsart:', meansLabel, pdfY, fontSize, color, font);
+        this.drawLV(page, block, this.tPdf('pdf.zahlungsart'), meansLabel, pdfY, fontSize, color, font);
         break;
       }
       case 'iban-bic': {
@@ -243,7 +250,7 @@ export class PdfRenderService {
       }
       case 'payment-terms':
         if (invoice.paymentTerms) {
-          this.drawLV(page, block, 'Zahlungsziel:', invoice.paymentTerms, pdfY, fontSize, color, font);
+          this.drawLV(page, block, this.tPdf('pdf.zahlungsziel'), invoice.paymentTerms, pdfY, fontSize, color, font);
         }
         break;
       case 'kleinunternehmer-note':
@@ -260,8 +267,8 @@ export class PdfRenderService {
   ): void {
     const s = invoice.seller;
     const lines = [s.name, s.street, `${s.postalCode} ${s.city}`];
-    if (s.vatId) lines.push(`USt-IdNr.: ${s.vatId}`);
-    if (s.taxNumber) lines.push(`Steuernr.: ${s.taxNumber}`);
+    if (s.vatId) lines.push(`${this.tPdf('pdf.ust_idnr')} ${s.vatId}`);
+    if (s.taxNumber) lines.push(`${this.tPdf('pdf.steuernr')} ${s.taxNumber}`);
     const lineH = fontSize * 1.4;
     const padL = block.paddingLeft ?? 0;
     const padR = block.paddingRight ?? 0;
@@ -297,11 +304,11 @@ export class PdfRenderService {
   ): void {
     const lineH = fontSize * 1.4;
     const rows: [string, string][] = [
-      ['Nr.:', invoice.invoiceNumber],
-      ['Datum:', this.formatDate(invoice.invoiceDate)],
+      [this.tPdf('pdf.nr'), invoice.invoiceNumber],
+      [this.tPdf('pdf.datum'), this.formatDate(invoice.invoiceDate)],
     ];
-    if (invoice.dueDate) rows.push(['Fällig:', this.formatDate(invoice.dueDate)]);
-    if (invoice.buyerReference) rows.push(['Referenz:', invoice.buyerReference]);
+    if (invoice.dueDate) rows.push([this.tPdf('pdf.faellig'), this.formatDate(invoice.dueDate)]);
+    if (invoice.buyerReference) rows.push([this.tPdf('pdf.referenz'), invoice.buyerReference]);
 
     let y = pdfY;
     for (const [label, value] of rows) {
@@ -330,12 +337,12 @@ export class PdfRenderService {
 
     // Column definitions — all possible columns
     const allColumns: { key: string; header: string; ratio: number }[] = [
-      { key: 'pos', header: 'Pos', ratio: 0.06 },
-      { key: 'name', header: 'Bezeichnung', ratio: 0.34 },
-      { key: 'qty', header: 'Menge', ratio: 0.1 },
-      { key: 'unit', header: 'Einheit', ratio: 0.1 },
-      { key: 'price', header: 'Einzelpreis', ratio: 0.2 },
-      { key: 'total', header: 'Netto', ratio: 0.2 },
+      { key: 'pos', header: this.tPdf('pdf.pos'), ratio: 0.06 },
+      { key: 'name', header: this.tPdf('pdf.bezeichnung'), ratio: 0.34 },
+      { key: 'qty', header: this.tPdf('pdf.menge'), ratio: 0.1 },
+      { key: 'unit', header: this.tPdf('pdf.einheit'), ratio: 0.1 },
+      { key: 'price', header: this.tPdf('pdf.einzelpreis'), ratio: 0.2 },
+      { key: 'total', header: this.tPdf('pdf.netto'), ratio: 0.2 },
     ];
 
     // Filter to visible columns
@@ -558,11 +565,11 @@ export class PdfRenderService {
     const labelX = block.x + padL;
 
     const rows: [string, string][] = invoice.kleinunternehmer
-      ? [['Rechnungssumme:', this.formatCurrency(invoice.totalGrossAmount ?? 0)]]
+      ? [[this.tPdf('pdf.rechnungssumme'), this.formatCurrency(invoice.totalGrossAmount ?? 0)]]
       : [
-          ['Nettobetrag:', this.formatCurrency(invoice.totalNetAmount ?? 0)],
-          [`USt. ${invoice.taxRate}%:`, this.formatCurrency(invoice.totalTaxAmount ?? 0)],
-          ['Bruttobetrag:', this.formatCurrency(invoice.totalGrossAmount ?? 0)],
+          [this.tPdf('pdf.nettobetrag'), this.formatCurrency(invoice.totalNetAmount ?? 0)],
+          [`${this.tPdf('pdf.ust_prefix')} ${invoice.taxRate}%:`, this.formatCurrency(invoice.totalTaxAmount ?? 0)],
+          [this.tPdf('pdf.bruttobetrag'), this.formatCurrency(invoice.totalGrossAmount ?? 0)],
         ];
 
     let y = pdfY - fontSize;
@@ -595,10 +602,10 @@ export class PdfRenderService {
   ): void {
     const lines: string[] = [];
     const meansLabel = PAYMENT_MEANS_CODES[invoice.paymentMeansCode] ?? invoice.paymentMeansCode;
-    lines.push(`Zahlungsart: ${meansLabel}`);
+    lines.push(`${this.tPdf('pdf.zahlungsart')} ${meansLabel}`);
     if (invoice.iban) lines.push(`IBAN: ${formatIban(invoice.iban)}`);
     if (invoice.bic) lines.push(`BIC: ${invoice.bic}`);
-    if (invoice.paymentTerms) lines.push(`Zahlungsziel: ${invoice.paymentTerms}`);
+    if (invoice.paymentTerms) lines.push(`${this.tPdf('pdf.zahlungsziel')} ${invoice.paymentTerms}`);
 
     const padL = block.paddingLeft ?? 0;
     const padR = block.paddingRight ?? 0;

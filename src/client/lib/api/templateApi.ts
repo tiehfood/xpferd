@@ -1,24 +1,29 @@
+import { t } from '../i18n.js';
+
 const BASE = '/api/v1/templates';
 
-const FIELD_LABELS: Record<string, string> = {
-  name: 'Name',
-  prefix: 'Präfix',
-  digits: 'Stellen',
-  nextNumber: 'Nächste Nr.',
-  paymentMeansCode: 'Zahlungsart',
-  unitCode: 'Einheit',
-  netPrice: 'Einzelpreis',
-  vatCategoryCode: 'USt-Kategorie',
-  vatRate: 'USt-Satz',
-};
+function getFieldLabels(): Record<string, string> {
+  return {
+    name: 'Name',
+    prefix: 'Präfix',
+    digits: 'Stellen',
+    nextNumber: 'Nächste Nr.',
+    paymentMeansCode: 'Zahlungsart',
+    unitCode: t('lines.einheit'),
+    netPrice: t('lines.einzelpreis'),
+    vatCategoryCode: 'USt-Kategorie',
+    vatRate: 'USt-Satz',
+  };
+}
 
 function formatValidationErrors(details: any[]): string {
   if (!details || details.length === 0) return 'Validierung fehlgeschlagen';
+  const fieldLabels = getFieldLabels();
   const seen = new Set<string>();
   const messages: string[] = [];
   for (const d of details) {
     const path = d.path?.join('.') ?? '';
-    const msg = FIELD_LABELS[path] ?? path;
+    const msg = fieldLabels[path] ?? path;
     if (!seen.has(msg)) {
       seen.add(msg);
       messages.push(msg);
