@@ -11,6 +11,7 @@
   import ImportPage from './pages/ImportPage.svelte';
   import RecurringInvoicesPage from './pages/RecurringInvoicesPage.svelte';
   import AuditLogPage from './pages/AuditLogPage.svelte';
+  import EmailTemplatesPage from './pages/EmailTemplatesPage.svelte';
   import { loadSettings } from './lib/settingsStore.svelte.js';
 
   // Load settings on app startup so they're available everywhere
@@ -33,6 +34,7 @@
     '/pdf-templates': PdfBuilderPage,
     '/pdf-templates/*': PdfBuilderPage,
     '/audit-log': AuditLogPage,
+    '/email-templates': EmailTemplatesPage,
     '/settings': SettingsPage,
   };
 </script>

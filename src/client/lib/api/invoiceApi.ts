@@ -62,8 +62,9 @@ function formatValidationErrors(details: any[]): string {
       msg = `Position ${lineNum}: ${fieldNames[field] ?? field}`;
     } else {
       const label = FIELD_LABELS[path] ?? path;
-      // Zod refinements provide a custom message
-      if (d.message && d.message !== 'Required' && d.message !== 'too_small' && !d.message.startsWith('String') && !d.message.startsWith('Expected')) {
+      // Only show message if it's a custom German refinement message (not a raw Zod default)
+      const isCustomMessage = d.message && !/^(Required|Too |String |Expected |Number |Invalid )/.test(d.message) && d.message !== 'too_small';
+      if (isCustomMessage) {
         msg = `${label}: ${d.message}`;
       } else {
         msg = label;
@@ -74,7 +75,7 @@ function formatValidationErrors(details: any[]): string {
       messages.push(msg);
     }
   }
-  return 'Fehlende Pflichtfelder: ' + messages.join(', ');
+  return 'Fehlende Pflichtfelder\n' + messages.join('\n');
 }
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {

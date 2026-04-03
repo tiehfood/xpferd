@@ -1,4 +1,10 @@
 const enUs = {
+  // ── Common ───────────────────────────────────────────────────────────────
+  'common.speichern': 'Save',
+  'common.speichern_laufend': 'Saving...',
+  'common.abbrechen': 'Cancel',
+  'common.schliessen': 'Close',
+
   // ── Settings ─────────────────────────────────────────────────────────────
   'settings.title': 'Settings',
   'settings.subtitle': 'General application settings',
@@ -278,6 +284,11 @@ const enUs = {
   'invoice_edit.schliessen': 'Close',
   'invoice_edit.verkaeufer': 'Seller',
   'invoice_edit.kaeufer': 'Buyer',
+  'invoice_edit.hinweis': 'Hint',
+  'invoice_edit.hinweise': 'Hints',
+  'invoice_edit.hinweise_weniger': 'Show less',
+  'invoice_edit.hinweise_weitere': 'more hints',
+  'invoice_edit.hinweise_anzeigen': 'Show hints',
 
   // ── InvoiceTemplateEditPage ───────────────────────────────────────────────
   'invoice_tpl_edit.laden': 'Loading template...',
@@ -621,6 +632,8 @@ const enUs = {
 
   // ── Audit Log ────────────────────────────────────────────────────────────
   'auditlog.title': 'Audit Log',
+  'auditlog.tab_recurring': 'Recurring',
+  'auditlog.tab_email': 'Email Delivery',
   'auditlog.subtitle': 'Recurring invoice generation history',
   'auditlog.keine_eintraege': 'No log entries yet',
   'auditlog.datum': 'Timestamp',
@@ -634,6 +647,105 @@ const enUs = {
   'auditlog.mehr_laden': 'Load More',
   'auditlog.alle_geladen': 'All entries loaded',
   'sidebar.protokoll': 'Audit Log',
+  'sidebar.email_vorlagen': 'Email Templates',
+
+  // ── Email ────────────────────────────────────────────────────────────────
+  'email.email': 'Email',
+
+  // Settings page (SMTP configuration)
+  'email.smtp_titel': 'Email (SMTP)',
+  'email.smtp_beschreibung': 'Configure SMTP server for sending invoices',
+  'email.smtp_host': 'SMTP Host',
+  'email.smtp_port': 'Port',
+  'email.smtp_secure': 'TLS/SSL',
+  'email.smtp_secure_hint': 'Enable for port 465 (SSL), disable for port 587 (STARTTLS)',
+  'email.smtp_user': 'Username',
+  'email.smtp_pass': 'Password',
+  'email.smtp_from_address': 'Sender Address',
+  'email.smtp_from_name': 'Sender Name',
+  'email.smtp_reply_to': 'Reply-To',
+  'email.verbindung_testen': 'Test Connection',
+  'email.verbindung_erfolgreich': 'Connection successful',
+  'email.verbindung_fehlgeschlagen': 'Connection failed',
+  'email.smtp_nicht_konfiguriert': 'SMTP not configured',
+
+  // Email templates
+  'email.vorlagen_titel': 'Email Templates',
+  'email.vorlagen_subtitle_singular': 'Template',
+  'email.vorlagen_subtitle_plural': 'Templates',
+  'email.vorlage_erstellen': 'Create Template',
+  'email.vorlage_bearbeiten': 'Edit Template',
+  'email.vorlage_name': 'Template Name',
+  'email.betreff': 'Subject',
+  'email.text': 'Email Body',
+  'email.body_typ': 'Content Type',
+  'email.body_text': 'Plain Text',
+  'email.body_html': 'HTML',
+  'email.body_html_hinweis': 'HTML content is sent as multipart email (plain text as fallback)',
+  'email.standard_vorlage': 'Default Template',
+  'email.platzhalter': 'Available Placeholders',
+  'email.platzhalter_rechnungsnummer': 'Invoice Number',
+  'email.platzhalter_rechnungsdatum': 'Invoice Date',
+  'email.platzhalter_faelligkeitsdatum': 'Due Date',
+  'email.platzhalter_betrag_brutto': 'Gross Amount',
+  'email.platzhalter_betrag_netto': 'Net Amount',
+  'email.platzhalter_waehrung': 'Currency',
+  'email.platzhalter_empfaenger': 'Recipient (Company)',
+  'email.platzhalter_verkaeufer': 'Seller (Company)',
+  'email.platzhalter_iban': 'IBAN',
+  'email.platzhalter_verwendungszweck': 'Payment Reference',
+  'email.vorlage_loeschen_bestaetigen': 'Really delete this template?',
+
+  // Rich text editor toolbar
+  'rte.fett': 'Bold',
+  'rte.kursiv': 'Italic',
+  'rte.durchgestrichen': 'Strikethrough',
+  'rte.ueberschrift': 'Heading',
+  'rte.aufzaehlung': 'Bullet List',
+  'rte.nummerierung': 'Numbered List',
+  'rte.link': 'Insert Link',
+  'rte.bild': 'Insert Image',
+  'rte.formatierung_loeschen': 'Clear Formatting',
+  'rte.link_url': 'URL:',
+
+  // Send dialog
+  'email.senden_titel': 'Send Invoice by Email',
+  'email.empfaenger': 'Recipient',
+  'email.cc': 'CC',
+  'email.bcc': 'BCC',
+  'email.vorlage': 'Email Template',
+  'email.anhang_typ': 'Attachment',
+  'email.anhang_zugferd': 'ZUGFeRD PDF',
+  'email.anhang_xml': 'XRechnung XML',
+  'email.anhang_zugferd_xml': 'ZUGFeRD PDF + XML',
+  'email.pdf_vorlage': 'PDF Template',
+  'email.vorschau_betreff': 'Subject Preview',
+  'email.vorschau_text': 'Body Preview',
+  'email.senden': 'Send',
+  'email.wird_gesendet': 'Sending…',
+  'email.gesendet': 'Email sent',
+  'email.senden_fehlgeschlagen': 'Failed to send email',
+  'email.kein_empfaenger': 'No email address stored for the buyer',
+  'email.pdf_vorlage_erforderlich': 'PDF template required for ZUGFeRD attachment',
+
+  // Email log
+  'email.protokoll_titel': 'Email Log',
+  'email.protokoll_datum': 'Sent',
+  'email.protokoll_rechnung': 'Invoice',
+  'email.protokoll_empfaenger': 'Recipient',
+  'email.protokoll_betreff': 'Subject',
+  'email.protokoll_anhang': 'Attachment',
+  'email.protokoll_status': 'Status',
+  'email.protokoll_erfolgreich': 'Sent',
+  'email.protokoll_fehler': 'Error',
+  'email.protokoll_leer': 'No emails sent yet',
+
+  // Recurring invoice auto-send
+  'email.auto_senden': 'Automatic Email Sending',
+  'email.auto_senden_aktivieren': 'Send automatically after creation',
+  'email.auto_senden_vorlage': 'Email Template',
+  'email.auto_senden_anhang': 'Attachment Type',
+  'email.auto_senden_pdf_vorlage': 'PDF Template',
 } as const;
 
 export default enUs;

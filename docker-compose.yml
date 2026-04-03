@@ -32,6 +32,10 @@ services:
       - "3000:3000"
     volumes:
       - xrechnung-data:/app/data
+    environment:
+      # Optional: 64-char hex string for SMTP password encryption.
+      # If omitted, a key is auto-generated at data/.encryption-key
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
 
 volumes:
   xrechnung-data:

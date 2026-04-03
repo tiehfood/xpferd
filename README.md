@@ -44,6 +44,9 @@ About the name: The "X" was taken from XRechnung obviously and part of ZUGFeRD i
 - Support for Germany and English language
 - Import existing XML invoices (XRechnung & UBL)
 - Create recurring invoices automatically with custom intervals
+- Send invoices via email (SMTP) with ZUGFeRD PDF / XRechnung XML attachments
+- Email templates with placeholder and HTML support
+- Encrypted SMTP password storage (AES-256-GCM)
 
 ## Screenshots
 | ![Screenshot01](docs/screenshots/screen1.png) | ![Screenshot02](docs/screenshots/screen2.png) |
@@ -69,6 +72,18 @@ docker-compose up dev
 ```
 
 The app is available at `http://localhost:3000` for production.
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ENCRYPTION_KEY` | No | 64-character hex string (32 bytes) used to encrypt SMTP passwords at rest (AES-256-GCM). If not set, a key is auto-generated and stored at `data/.encryption-key` inside the container. |
+
+
+```bash
+# Example: Generate encryption key
+openssl rand -hex 32
+```
 
 ## Manual Docker Setup
 

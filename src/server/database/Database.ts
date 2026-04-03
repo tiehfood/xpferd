@@ -220,6 +220,45 @@ export class Database {
         FOREIGN KEY (recurring_invoice_id) REFERENCES recurring_invoices(id) ON DELETE CASCADE,
         FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE SET NULL
       );
+
+      CREATE TABLE IF NOT EXISTS email_settings (
+        id INTEGER PRIMARY KEY CHECK(id = 1),
+        smtp_host TEXT NOT NULL DEFAULT '',
+        smtp_port INTEGER NOT NULL DEFAULT 587,
+        smtp_secure INTEGER NOT NULL DEFAULT 0,
+        smtp_user TEXT NOT NULL DEFAULT '',
+        smtp_pass TEXT NOT NULL DEFAULT '',
+        from_address TEXT NOT NULL DEFAULT '',
+        from_name TEXT,
+        reply_to TEXT,
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS email_templates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        body TEXT NOT NULL,
+        is_default INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS email_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        invoice_id INTEGER NOT NULL,
+        invoice_number TEXT,
+        recipient_email TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        attachment_type TEXT NOT NULL CHECK(attachment_type IN ('zugferd','xml','zugferd+xml')),
+        pdf_template_id INTEGER,
+        pdf_template_name TEXT,
+        sent_at TEXT NOT NULL DEFAULT (datetime('now')),
+        status TEXT NOT NULL CHECK(status IN ('success','error')),
+        error_message TEXT,
+        FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
+        FOREIGN KEY (pdf_template_id) REFERENCES pdf_templates(id) ON DELETE SET NULL
+      );
     `);
 
     // Column migrations — ALTER TABLE IF NOT EXISTS is not supported by SQLite,
@@ -249,5 +288,14 @@ export class Database {
     addColumnIfMissing('invoices', 'prepaid_amount', 'REAL DEFAULT 0');
     addColumnIfMissing('invoice_lines', 'item_description', 'TEXT');
     addColumnIfMissing('invoices', 'auto_generated', 'INTEGER NOT NULL DEFAULT 0');
+
+    // Recurring invoice email auto-send fields
+    addColumnIfMissing('recurring_invoices', 'auto_send_email', 'INTEGER NOT NULL DEFAULT 0');
+    addColumnIfMissing('recurring_invoices', 'email_template_id', 'INTEGER');
+    addColumnIfMissing('recurring_invoices', 'email_attachment_type', "TEXT NOT NULL DEFAULT 'zugferd'");
+    addColumnIfMissing('recurring_invoices', 'pdf_template_id', 'INTEGER');
+
+    // Email template HTML body support
+    addColumnIfMissing('email_templates', 'body_html', 'TEXT');
   }
 }

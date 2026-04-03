@@ -5,6 +5,7 @@ import { InvoiceTemplateModel } from '../models/InvoiceTemplate.js';
 import { Database } from '../database/Database.js';
 import { InvoiceService } from './InvoiceService.js';
 import { InvoiceNumberTemplateService } from './InvoiceNumberTemplateService.js';
+import { EmailService } from './EmailService.js';
 import { computeNextDate, computeOccurrences, addDays } from '../../shared/utils/recurringDates.js';
 import type { RecurringRule } from '../../shared/utils/recurringDates.js';
 
@@ -27,6 +28,10 @@ export class RecurringInvoiceService {
 
   private get invoiceNumberTemplateService(): InvoiceNumberTemplateService {
     return new InvoiceNumberTemplateService();
+  }
+
+  private get emailService(): EmailService {
+    return new EmailService();
   }
 
   // ─── CRUD ────────────────────────────────────────────────────────────────
@@ -93,7 +98,7 @@ export class RecurringInvoiceService {
 
   // ─── Generation ──────────────────────────────────────────────────────────
 
-  generateInvoice(recurringId: number): { invoiceId: number } | { error: string } {
+  async generateInvoice(recurringId: number): Promise<{ invoiceId: number } | { error: string }> {
     const rule = this.model.findById(recurringId);
     if (!rule) {
       return { error: `Recurring invoice rule ${recurringId} not found` };
@@ -166,6 +171,23 @@ export class RecurringInvoiceService {
       status: 'success',
     });
 
+    // Auto-send email if configured
+    if (rule.autoSendEmail && rule.emailTemplateId && createdInvoice.id) {
+      try {
+        const recipientEmail = invoiceData.buyer?.email;
+        if (recipientEmail) {
+          await this.emailService.sendInvoiceEmail(createdInvoice.id, {
+            recipientEmail,
+            templateId: rule.emailTemplateId,
+            attachmentType: (rule.emailAttachmentType as 'zugferd' | 'xml' | 'zugferd+xml') ?? 'zugferd',
+            pdfTemplateId: rule.pdfTemplateId,
+          });
+        }
+      } catch (err) {
+        console.error(`[RecurringInvoice] Email send failed for invoice ${createdInvoice.id}:`, err);
+      }
+    }
+
     // Advance the schedule state
     const recurringRule: RecurringRule = this.toRecurringRule(rule);
     const nextScheduled = computeNextDate(recurringRule, scheduledDate);
@@ -178,7 +200,7 @@ export class RecurringInvoiceService {
     return { invoiceId: createdInvoice.id! };
   }
 
-  generateDueInvoices(): { generated: number; errors: number } {
+  async generateDueInvoices(): Promise<{ generated: number; errors: number }> {
     const today = new Date().toISOString().slice(0, 10);
     const dueRules = this.model.findDue(today);
 
@@ -191,7 +213,7 @@ export class RecurringInvoiceService {
       // Catch-up: generate one invoice per overdue occurrence
       let current = this.model.findById(rule.id);
       while (current && current.nextScheduledDate && current.nextScheduledDate <= today) {
-        const result = this.generateInvoice(rule.id);
+        const result = await this.generateInvoice(rule.id);
         if ('error' in result) {
           errors++;
           // Break out of catch-up loop on error to avoid infinite loops

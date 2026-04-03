@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import { InvoiceController } from '../controllers/InvoiceController.js';
+import { EmailController } from '../controllers/EmailController.js';
 
 const router = Router();
 const controller = new InvoiceController();
+const emailController = new EmailController();
 
 /**
  * @swagger
@@ -207,5 +209,50 @@ router.delete('/:id', controller.delete);
  *         description: Not found
  */
 router.post('/:id/duplicate', controller.duplicate);
+
+/**
+ * @swagger
+ * /api/v1/invoices/{id}/send-email:
+ *   post:
+ *     summary: Send invoice by email
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [recipientEmail, templateId, attachmentType]
+ *             properties:
+ *               recipientEmail:
+ *                 type: string
+ *                 format: email
+ *               templateId:
+ *                 type: integer
+ *               attachmentType:
+ *                 type: string
+ *                 enum: [zugferd, xml, zugferd+xml]
+ *               pdfTemplateId:
+ *                 type: integer
+ *               cc:
+ *                 type: string
+ *               bcc:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Email sent successfully, returns log entry
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Invoice not found
+ *       500:
+ *         description: Send failed
+ */
+router.post('/:id/send-email', emailController.sendEmail);
 
 export default router;
