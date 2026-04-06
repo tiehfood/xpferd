@@ -62,7 +62,7 @@
     "svelte": "^5.55.1",
     "svelte-check": "^4.4.6",
     "svelte-preprocess": "^6.0.3",
-    "svelte-spa-router": "^5.0.0",
+    "svelte-spa-router": "^5.0.1",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
