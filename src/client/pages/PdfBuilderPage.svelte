@@ -12,6 +12,7 @@
   import FormSelect from '../lib/components/FormSelect.svelte';
   import { injectFontFaces } from '../lib/utils/fontFaces.js';
   import { extractFontName, arrayBufferToBase64 } from '../lib/utils/fontName.js';
+  import { generateId } from '../lib/utils/generateId.js';
   import { guideToPosition, positionToGuide } from '$shared/utils/guideConvert';
 
   let { params = {} } = $props();
@@ -329,7 +330,7 @@
   function addBlock(type: PdfBlockDto['type']) {
     const meta = ALL_BLOCK_TYPES.find(bt => bt.type === type)!;
     const newBlock: PdfBlockDto = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       type,
       x: Math.round((pageWidth - meta.defaultW) / 2),
       y: Math.round(pageHeight * 0.15 + template.blocks.length * 30),
@@ -797,7 +798,7 @@
   function addGuideLine(orientation: 'horizontal' | 'vertical') {
     const pos = orientation === 'horizontal' ? Math.round(pageHeight / 2) : Math.round(pageWidth / 2);
     const newGuide: GuideLineDto = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       orientation,
       position: pos,
       locked: false,
