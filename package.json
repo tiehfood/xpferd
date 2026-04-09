@@ -58,7 +58,7 @@
     "esbuild-svelte": "^0.9.4",
     "flowbite": "^4.0.1",
     "pdfjs-dist": "^5.6.205",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.8",
     "svelte": "^5.55.1",
     "svelte-check": "^4.4.6",
     "svelte-preprocess": "^6.0.3",
