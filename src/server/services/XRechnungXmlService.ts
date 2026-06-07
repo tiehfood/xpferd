@@ -153,15 +153,29 @@ export class XRechnungXmlService {
   private addParty(
     parent: ReturnType<typeof create>,
     tagName: string,
-    party: { name: string; street: string; city: string; postalCode: string; countryCode: string; vatId?: string; taxNumber?: string; contactName?: string; contactPhone?: string; contactEmail?: string; email?: string },
+    party: { name: string; street: string; city: string; postalCode: string; countryCode: string; vatId?: string; taxNumber?: string; contactName?: string; contactPhone?: string; contactEmail?: string; email?: string; endpointId?: string; endpointSchemeId?: string },
     isSeller: boolean,
   ): void {
     const wrapper = (parent as any).ele(tagName);
     const partyEl = wrapper.ele('cac:Party');
 
     // EndpointID (BT-34 seller / BT-49 buyer) — mandatory for PEPPOL (R020, R010)
-    const endpointEmail = isSeller ? party.contactEmail : party.email;
-    partyEl.ele('cbc:EndpointID', { schemeID: 'EM' }).txt(endpointEmail || '');
+    if (party.endpointId) {
+      let scheme = party.endpointSchemeId;
+      let id = party.endpointId;
+
+      if (!scheme && id.includes(':')) {
+        const parts = id.split(':');
+        scheme = parts[0];
+        id = parts.slice(1).join(':');
+      }
+
+      const attrs = scheme ? { schemeID: scheme } : {};
+      partyEl.ele('cbc:EndpointID', attrs).txt(id);
+    } else {
+      const endpointEmail = isSeller ? party.contactEmail : party.email;
+      partyEl.ele('cbc:EndpointID', { schemeID: 'EM' }).txt(endpointEmail || '');
+    }
 
     // Postal Address (BG-5 / BG-8)
     const address = partyEl.ele('cac:PostalAddress');
