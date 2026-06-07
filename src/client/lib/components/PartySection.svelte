@@ -51,6 +51,8 @@
       party.postalCode = '';
       party.countryCode = 'DE';
       party.vatId = '';
+      party.endpointId = '';
+      party.endpointSchemeId = '';
       if (isSeller) {
         party.taxNumber = '';
         party.contactName = '';
@@ -70,6 +72,8 @@
     party.postalCode = found.postalCode;
     party.countryCode = found.countryCode;
     party.vatId = found.vatId ?? '';
+    party.endpointId = found.endpointId ?? '';
+    party.endpointSchemeId = found.endpointSchemeId ?? '';
 
     if (isSeller) {
       party.taxNumber = found.taxNumber ?? '';
@@ -179,6 +183,16 @@
               </svg>
             </span>
             <span class="detail-value">{selectedParty.email}</span>
+          </div>
+        {/if}
+        {#if selectedParty.endpointId}
+          <div class="detail-row">
+            <span class="detail-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>
+              </svg>
+            </span>
+            <span class="detail-value">{selectedParty.endpointId}</span>
           </div>
         {/if}
       </div>

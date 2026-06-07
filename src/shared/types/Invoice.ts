@@ -12,6 +12,8 @@ export interface PartyDto {
   contactPhone?: string;
   contactEmail?: string;
   email?: string;
+  endpointId?: string;
+  endpointSchemeId?: string;
 }
 
 export interface SellerDto {
@@ -25,6 +27,8 @@ export interface SellerDto {
   contactName?: string;            // BT-41
   contactPhone?: string;           // BT-42
   contactEmail?: string;           // BT-43
+  endpointId?: string;             // BT-34
+  endpointSchemeId?: string;
 }
 
 export interface BuyerDto {
@@ -35,6 +39,8 @@ export interface BuyerDto {
   countryCode: string;             // BT-55
   vatId?: string;                  // BT-48
   email?: string;                  // BT-49
+  endpointId?: string;             // BT-49
+  endpointSchemeId?: string;
 }
 
 export interface InvoiceLineDto {

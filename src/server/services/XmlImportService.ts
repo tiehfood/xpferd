@@ -198,6 +198,16 @@ export class XmlImportService {
 
     const sellerContact = supplierParty['cac:Contact'] as Record<string, unknown> | undefined;
 
+    let sellerEndpointId: string | undefined;
+    let sellerEndpointSchemeId: string | undefined;
+    const sellerEndpointNode = supplierParty['cbc:EndpointID'] as unknown;
+    if (sellerEndpointNode != null) {
+      if (attr(sellerEndpointNode, 'schemeID') !== 'EM') {
+        sellerEndpointId = orUndef(text(sellerEndpointNode));
+        sellerEndpointSchemeId = orUndef(attr(sellerEndpointNode, 'schemeID'));
+      }
+    }
+
     // ------------------------------------------------------------------
     // Buyer (BG-7)
     // ------------------------------------------------------------------
@@ -226,10 +236,15 @@ export class XmlImportService {
 
     // Buyer email: EndpointID where @schemeID = 'EM', else Contact/ElectronicMail
     let buyerEmail: string | undefined;
+    let buyerEndpointId: string | undefined;
+    let buyerEndpointSchemeId: string | undefined;
     const endpointId = customerParty['cbc:EndpointID'] as unknown;
     if (endpointId != null) {
       if (attr(endpointId, 'schemeID') === 'EM') {
         buyerEmail = orUndef(text(endpointId));
+      } else {
+        buyerEndpointId = orUndef(text(endpointId));
+        buyerEndpointSchemeId = orUndef(attr(endpointId, 'schemeID'));
       }
     }
     if (!buyerEmail) {
@@ -343,6 +358,8 @@ export class XmlImportService {
         contactName: text(sellerContact?.['cbc:Name']) || '',
         contactPhone: text(sellerContact?.['cbc:Telephone']) || '',
         contactEmail: text(sellerContact?.['cbc:ElectronicMail']) || '',
+        endpointId: sellerEndpointId,
+        endpointSchemeId: sellerEndpointSchemeId,
       },
 
       buyer: {
@@ -353,6 +370,8 @@ export class XmlImportService {
         countryCode: text(buyerCountry?.['cbc:IdentificationCode']) || 'DE',
         vatId: buyerVatId,
         email: buyerEmail ?? '',
+        endpointId: buyerEndpointId,
+        endpointSchemeId: buyerEndpointSchemeId,
       },
 
       paymentMeansCode,
@@ -448,6 +467,17 @@ export class XmlImportService {
     const sellerPhone = sellerContact?.['ram:TelephoneUniversalCommunication'] as Record<string, unknown> | undefined;
     const sellerEmailComm = sellerContact?.['ram:EmailURIUniversalCommunication'] as Record<string, unknown> | undefined;
 
+    let sellerEndpointId: string | undefined;
+    let sellerEndpointSchemeId: string | undefined;
+    const sellerUri = sellerParty?.['ram:URIUniversalCommunication'] as Record<string, unknown> | undefined;
+    if (sellerUri) {
+      const schemeId = attr(sellerUri['ram:URIID'], 'schemeID');
+      if (schemeId && schemeId !== 'EM') {
+        sellerEndpointId = orUndef(text(sellerUri['ram:URIID']));
+        sellerEndpointSchemeId = schemeId;
+      }
+    }
+
     // ------------------------------------------------------------------
     // Buyer (BG-7)
     // ------------------------------------------------------------------
@@ -466,9 +496,17 @@ export class XmlImportService {
 
     // Buyer email: URIUniversalCommunication where schemeID = 'EM'
     let buyerEmail: string | undefined;
+    let buyerEndpointId: string | undefined;
+    let buyerEndpointSchemeId: string | undefined;
     const buyerUri = buyerParty?.['ram:URIUniversalCommunication'] as Record<string, unknown> | undefined;
-    if (buyerUri && attr(buyerUri['ram:URIID'], 'schemeID') === 'EM') {
-      buyerEmail = orUndef(text(buyerUri['ram:URIID']));
+    if (buyerUri) {
+      const schemeId = attr(buyerUri['ram:URIID'], 'schemeID');
+      if (schemeId === 'EM') {
+        buyerEmail = orUndef(text(buyerUri['ram:URIID']));
+      } else if (schemeId) {
+        buyerEndpointId = orUndef(text(buyerUri['ram:URIID']));
+        buyerEndpointSchemeId = schemeId;
+      }
     }
     // Fallback: SpecifiedLegalOrganization or DefinedTradeContact email
     if (!buyerEmail) {
@@ -598,6 +636,8 @@ export class XmlImportService {
         contactName: text(sellerContact?.['ram:PersonName']) || '',
         contactPhone: text(sellerPhone?.['ram:CompleteNumber']) || '',
         contactEmail: text(sellerEmailComm?.['ram:URIID']) || '',
+        endpointId: sellerEndpointId,
+        endpointSchemeId: sellerEndpointSchemeId,
       },
 
       buyer: {
@@ -608,6 +648,8 @@ export class XmlImportService {
         countryCode: text(buyerAddress?.['ram:CountryID']) || 'DE',
         vatId: buyerVatId,
         email: buyerEmail ?? '',
+        endpointId: buyerEndpointId,
+        endpointSchemeId: buyerEndpointSchemeId,
       },
 
       paymentMeansCode,

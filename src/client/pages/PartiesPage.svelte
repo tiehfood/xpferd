@@ -39,6 +39,7 @@
       type: partyType,
       name: '', street: '', city: '', postalCode: '', countryCode: 'DE',
       vatId: '', taxNumber: '', contactName: '', contactPhone: '', contactEmail: '', email: '',
+      endpointId: '', endpointSchemeId: ''
     };
     editError = '';
     fieldErrors = {};
@@ -47,7 +48,11 @@
   }
 
   function startEdit(party: any) {
-    editing = { ...party };
+    editing = {
+      ...party,
+      endpointId: party.endpointId ?? '',
+      endpointSchemeId: party.endpointSchemeId ?? ''
+    };
     editError = '';
     fieldErrors = {};
     plzError = '';
@@ -67,10 +72,15 @@
     editError = '';
     fieldErrors = {};
     try {
-      if (editing.id) {
-        await partyApi.update(editing.id, editing);
+      // Clean up empty strings for optional endpoint fields to store them as undefined/null
+      const payload = { ...editing };
+      if (payload.endpointId === '') payload.endpointId = undefined;
+      if (payload.endpointSchemeId === '') payload.endpointSchemeId = undefined;
+
+      if (payload.id) {
+        await partyApi.update(payload.id, payload);
       } else {
-        await partyApi.create(editing);
+        await partyApi.create(payload);
       }
       editing = null;
       await load();
@@ -285,6 +295,24 @@
             </div>
           </div>
         {/if}
+
+        <div class="section-divider">{t('parties.electronic_address')}</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-endpointId">{t('parties.endpoint_id')}</label>
+            <input id="edit-endpointId" bind:value={editing.endpointId} placeholder={t('parties.endpoint_id_placeholder')}
+              class:field-invalid={fieldErrors['endpointId']} oninput={() => clearFieldError('endpointId')} />
+            {#if fieldErrors['endpointId']}<span class="field-error">{fieldErrors['endpointId']}</span>{/if}
+            <span class="field-help">{t('parties.endpoint_id_help')}</span>
+          </div>
+          <div class="form-group">
+            <label for="edit-endpointSchemeId">{t('parties.endpoint_scheme_id')}</label>
+            <input id="edit-endpointSchemeId" bind:value={editing.endpointSchemeId} placeholder={t('parties.endpoint_scheme_id_placeholder')}
+              class:field-invalid={fieldErrors['endpointSchemeId']} oninput={() => clearFieldError('endpointSchemeId')} />
+            {#if fieldErrors['endpointSchemeId']}<span class="field-error">{fieldErrors['endpointSchemeId']}</span>{/if}
+            <span class="field-help">{t('parties.endpoint_scheme_id_help')}</span>
+          </div>
+        </div>
       </div>
 
       <div class="modal-footer">
@@ -658,6 +686,14 @@
     font-size: 0.75rem;
     color: var(--danger);
     margin-top: 0.2rem;
+  }
+
+  .field-help {
+    display: block;
+    font-size: 0.725rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+    line-height: 1.3;
   }
 
   :global(.field-invalid) {
