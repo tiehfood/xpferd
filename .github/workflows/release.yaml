@@ -16,7 +16,7 @@ jobs:
       VERSION_NUMBER: ${{ steps.output.outputs.VERSION_NUMBER }}
       CI_CREATE_IMAGE: ${{ steps.output.outputs.CI_CREATE_IMAGE }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install pnpm
         uses: pnpm/action-setup@v5
         with:
@@ -47,7 +47,7 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
