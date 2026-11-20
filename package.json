@@ -36,12 +36,6 @@
     "xmlbuilder2": "^4.0.3",
     "zod": "^4.3.6"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "esbuild"
-    ]
-  },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.2",
     "@tsconfig/svelte": "^5.0.8",

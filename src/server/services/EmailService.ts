@@ -9,6 +9,7 @@ import { InvoiceService } from './InvoiceService.js';
 import { PdfTemplateService } from './PdfTemplateService.js';
 import { PdfRenderService } from './PdfRenderService.js';
 import { XRechnungXmlService } from './XRechnungXmlService.js';
+import { CIIInvoiceXmlService } from './CIIInvoiceXmlService.js';
 import { ZUGFeRDService } from './ZUGFeRDService.js';
 import { htmlToText } from '../../shared/utils/htmlToText.js';
 
@@ -39,6 +40,10 @@ export class EmailService {
 
   private get xmlService() {
     return new XRechnungXmlService();
+  }
+
+  private get ciiXmlService() {
+    return new CIIInvoiceXmlService();
   }
 
   private get zugferdService() {
@@ -234,7 +239,7 @@ export class EmailService {
       const pdfTemplate = this.pdfTemplateService.getById(pdfTemplateId);
       if (!pdfTemplate) throw new Error('PDF-Vorlage nicht gefunden');
       const pdfBytes = await this.renderService.render(pdfTemplate, invoice);
-      const xmlString = this.xmlService.generate(invoice);
+      const xmlString = this.ciiXmlService.generate(invoice);
       const zugferdBytes = await this.zugferdService.embed(pdfBytes, xmlString);
       attachments.push({
         filename: `${invoice.invoiceNumber}.pdf`,

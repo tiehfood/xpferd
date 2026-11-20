@@ -7,7 +7,7 @@ ARG VERSION=dev
 ENV VERSION=${VERSION}
 
 # Install all dependencies (including devDeps for build)
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Copy source

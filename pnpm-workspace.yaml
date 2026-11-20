@@ -1,0 +1,6 @@
+allowBuilds:
+  "@parcel/watcher": true
+  "@scarf/scarf": false
+  better-sqlite3: true
+  esbuild: true
+  svelte-preprocess: true
