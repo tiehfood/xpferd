@@ -1,9 +1,9 @@
 /**
- * ZUGFeRDService — embeds an XRechnung UBL XML file into a PDF to produce a
+ * ZUGFeRDService — embeds an XRechnung CII XML file into a PDF to produce a
  * hybrid ZUGFeRD 2.3 / Factur-X XRECHNUNG invoice.
  *
  * The resulting PDF contains:
- *  • xrechnung.xml as an EmbeddedFile with AFRelationship = Alternative
+ *  • xrechnung.xml (CII syntax) as an EmbeddedFile with AFRelationship = Alternative
  *  • /AF array in the document catalog pointing at the embedded file
  *  • XMP metadata stream with PDF/A-3b and ZUGFeRD XRECHNUNG declarations
  *
@@ -30,7 +30,7 @@ export class ZUGFeRDService {
    * Embed `xmlString` into `pdfBytes` and return ZUGFeRD-compliant PDF bytes.
    *
    * @param pdfBytes  Raw PDF produced by PdfRenderService.render()
-   * @param xmlString XRechnung UBL 2.1 XML string (from XRechnungXmlService.generate())
+   * @param xmlString XRechnung CII XML string (from CIIInvoiceXmlService.generate())
    */
   async embed(pdfBytes: Uint8Array, xmlString: string): Promise<Uint8Array> {
     const pdf = await PDF.load(pdfBytes);
@@ -38,8 +38,8 @@ export class ZUGFeRDService {
 
     // 1. Attach the XML file
     pdf.addAttachment(ATTACHMENT_NAME, xmlBytes, {
-      mimeType: 'application/xml',
-      description: 'XRechnung UBL 2.1 Invoice',
+      mimeType: 'text/xml',
+      description: 'XRechnung CII Invoice',
     });
 
     // 2. Set AFRelationship on the FileSpec dict and add /AF to catalog
@@ -93,7 +93,7 @@ export class ZUGFeRDService {
       `        xmlns:fx="urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#">\n` +
       `      <fx:DocumentFileName>${ATTACHMENT_NAME}</fx:DocumentFileName>\n` +
       `      <fx:DocumentType>INVOICE</fx:DocumentType>\n` +
-      `      <fx:Version>2.3</fx:Version>\n` +
+      `      <fx:Version>3.0</fx:Version>\n` +
       `      <fx:ConformanceLevel>XRECHNUNG</fx:ConformanceLevel>\n` +
       `    </rdf:Description>\n` +
 

@@ -5,9 +5,9 @@
  *  2. AFRelationship = Alternative on the file spec
  *  3. /AF array in the document catalog pointing at the embedded file
  *  4. XMP metadata stream with ZUGFeRD XRECHNUNG conformance declaration
- *  5. The embedded XML is byte-for-byte the original XRechnung XML
+ *  5. The embedded XML is byte-for-byte the original CII invoice XML
  *
- * Also validates the XRechnung XML structure (well-formed, required elements).
+ * Also checks the embedded CII XML structure and key invoice data.
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -16,7 +16,7 @@ import fs from 'fs';
 import { Database } from '../../src/server/database/Database.js';
 import { PDF, PdfArray, PdfDict, PdfRef } from '@libpdf/core';
 import { ZUGFeRDService } from '../../src/server/services/ZUGFeRDService.js';
-import { XRechnungXmlService } from '../../src/server/services/XRechnungXmlService.js';
+import { CIIInvoiceXmlService } from '../../src/server/services/CIIInvoiceXmlService.js';
 import { PdfRenderService } from '../../src/server/services/PdfRenderService.js';
 import type { InvoiceDto, PdfTemplateDto } from '../../src/shared/types';
 
@@ -108,7 +108,7 @@ let pdf: PDF;
 
 beforeAll(async () => {
   const renderer = new PdfRenderService();
-  const xmlSvc = new XRechnungXmlService();
+  const xmlSvc = new CIIInvoiceXmlService();
   const zugferdSvc = new ZUGFeRDService();
 
   const pdfBytes = await renderer.render(MINIMAL_TEMPLATE, INVOICE);
@@ -134,9 +134,15 @@ describe('ZUGFeRD — embedded XML file', () => {
     expect(decoded).toBe(xmlString);
   });
 
-  it('MIME type is application/xml', () => {
+  it('embeds CII XML rather than UBL XML', () => {
+    expect(xmlString).toContain('<rsm:CrossIndustryInvoice');
+    expect(xmlString).toContain('urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100');
+    expect(xmlString).not.toContain('<ubl:Invoice');
+  });
+
+  it('MIME type is text/xml', () => {
     const info = pdf.getAttachments().get('xrechnung.xml');
-    expect(info?.mimeType).toContain('application/xml');
+    expect(info?.mimeType).toContain('text/xml');
   });
 });
 
@@ -220,8 +226,8 @@ describe('ZUGFeRD — XMP metadata in catalog', () => {
     expect(xmpText).toContain('<fx:ConformanceLevel>XRECHNUNG</fx:ConformanceLevel>');
   });
 
-  it('declares ZUGFeRD version 2.3', () => {
-    expect(xmpText).toContain('<fx:Version>2.3</fx:Version>');
+  it('declares the XRechnung profile version', () => {
+    expect(xmpText).toContain('<fx:Version>3.0</fx:Version>');
   });
 
   it('declares document file name xrechnung.xml', () => {
@@ -242,14 +248,15 @@ describe('ZUGFeRD — XMP metadata in catalog', () => {
 // 5. XRechnung XML structure validation
 // ---------------------------------------------------------------------------
 
-describe('XRechnung XML — structure and required elements', () => {
+describe('CII XML — structure and required elements', () => {
   it('is well-formed XML (parses without error)', () => {
     // Use the DOMParser-equivalent — parse as text, check for parse errors
     expect(xmlString).toContain('<?xml');
-    expect(xmlString).toContain('ubl:Invoice');
+    expect(xmlString).toContain('rsm:CrossIndustryInvoice');
+    expect(xmlString).not.toContain('ubl:Invoice');
   });
 
-  it('contains CustomizationID for XRechnung 3.0', () => {
+  it('contains the XRechnung 3.0 guideline identifier', () => {
     expect(xmlString).toContain('urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0');
   });
 
@@ -258,7 +265,7 @@ describe('XRechnung XML — structure and required elements', () => {
   });
 
   it('contains invoice date', () => {
-    expect(xmlString).toContain('2024-06-01');
+    expect(xmlString).toContain('20240601');
   });
 
   it('contains seller name', () => {
@@ -285,10 +292,10 @@ describe('XRechnung XML — structure and required elements', () => {
     expect(xmlString).toContain('1190');
   });
 
-  it('has valid UBL 2.1 root element', () => {
-    expect(xmlString).toContain('xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"');
-    expect(xmlString).toContain('xmlns:cac=');
-    expect(xmlString).toContain('xmlns:cbc=');
+  it('has CII root element and namespaces', () => {
+    expect(xmlString).toContain('xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"');
+    expect(xmlString).toContain('xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"');
+    expect(xmlString).toContain('xmlns:udt=');
   });
 });
 
@@ -296,9 +303,9 @@ describe('XRechnung XML — structure and required elements', () => {
 // 6. Kleinunternehmer (§19 UStG) — VAT-exempt variant
 // ---------------------------------------------------------------------------
 
-describe('XRechnung XML — Kleinunternehmer variant', () => {
+describe('CII XML — Kleinunternehmer variant', () => {
   it('generates tax-exempt XML when kleinunternehmer=true', () => {
-    const xmlSvc = new XRechnungXmlService();
+    const xmlSvc = new CIIInvoiceXmlService();
     const kleinInvoice: InvoiceDto = {
       ...INVOICE,
       kleinunternehmer: true,
@@ -312,6 +319,7 @@ describe('XRechnung XML — Kleinunternehmer variant', () => {
     };
     const xml = xmlSvc.generate(kleinInvoice);
     expect(xml).toContain('§19');
-    expect(xml).toContain('TaxExemptionReasonCode');
+    expect(xml).toContain('<ram:ExemptionReason>');
+    expect(xml).toContain('<ram:CategoryCode>E</ram:CategoryCode>');
   });
 });

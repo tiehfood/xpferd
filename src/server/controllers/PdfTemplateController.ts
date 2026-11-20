@@ -4,7 +4,7 @@ import { PdfTemplateService } from '../services/PdfTemplateService.js';
 import { InvoiceService } from '../services/InvoiceService.js';
 import { PdfRenderService } from '../services/PdfRenderService.js';
 import { ZUGFeRDService } from '../services/ZUGFeRDService.js';
-import { XRechnungXmlService } from '../services/XRechnungXmlService.js';
+import { CIIInvoiceXmlService } from '../services/CIIInvoiceXmlService.js';
 import { pdfTemplateSchema, previewDraftSchema } from '../validators/pdfTemplateValidator.js';
 import { ZodError } from 'zod';
 
@@ -13,7 +13,7 @@ export class PdfTemplateController {
   private invoiceService = new InvoiceService();
   private renderService = new PdfRenderService();
   private zugferdService = new ZUGFeRDService();
-  private xmlService = new XRechnungXmlService();
+  private ciiXmlService = new CIIInvoiceXmlService();
 
   listAll = (_req: Request, res: Response): void => {
     res.json(this.service.listAll());
@@ -138,7 +138,7 @@ export class PdfTemplateController {
 
     try {
       const pdfBytes = await this.renderService.render(template, invoice);
-      const xmlString = this.xmlService.generate(invoice);
+      const xmlString = this.ciiXmlService.generate(invoice);
       const zugferdBytes = await this.zugferdService.embed(pdfBytes, xmlString);
       const filename = `${invoice.invoiceNumber}-ZUGFeRD.pdf`;
       res.setHeader('Content-Type', 'application/pdf');
